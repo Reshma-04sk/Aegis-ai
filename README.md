@@ -19,7 +19,7 @@
 | Code quality | [CODE_QUALITY.md](CODE_QUALITY.md) | Typed on both sides (mypy strict; TypeScript strict with type-aware ESLint), complexity ≤ 6, docstrings enforced |
 | Security | [SECURITY.md](SECURITY.md) | Strict CSP with Trusted Types, prompt-injection-proof decisions, CodeQL |
 | Efficiency | [EFFICIENCY.md](EFFICIENCY.md) | Prerendered pages, ~75 KB gzipped of shared script, animation code loaded only when motion is on; CLS ≤ 0.002 measured |
-| Testing | [TESTING.md](TESTING.md) | 374 backend tests at **100% coverage** (incl. property-based, API fuzzing and code-convention checks), 48 front-end unit tests at 96% coverage, 32 browser tests, OWASP ZAP scan |
+| Testing | [TESTING.md](TESTING.md) | 375 backend tests at **100% coverage** (incl. property-based, API fuzzing and code-convention checks), 48 front-end unit tests at 96% coverage, 32 browser tests, OWASP ZAP scan |
 | Accessibility | [ACCESSIBILITY.md](ACCESSIBILITY.md) | WCAG 2.1 AA: zero axe violations at 1440 px and 375 px |
 
 Design decisions: [docs/adr](docs/adr) (rules decide and AI explains; forecast and measurement
@@ -154,7 +154,7 @@ uv sync
 uv run ruff check . && uv run ruff format --check .
 uv run mypy            # strict
 npm ci && npm run build   # the page tests serve the built front end
-uv run pytest             # 374 tests incl. property, fuzz and convention tests, 100% coverage
+uv run pytest             # 375 tests incl. property, fuzz and convention tests, 100% coverage
 npm run lint && npm run typecheck && npm run format:check
 npm run test:unit         # 48 Vitest tests with coverage
 npx playwright install chromium

@@ -45,7 +45,7 @@ previous (no-build) front end on the live site and will be replaced after the ne
 - **Animation code only when wanted.** GSAP and ScrollTrigger are separate chunks loaded after
   first paint, and never for reduced-motion visitors.
 - **Compression.** `GZipMiddleware` for responses over 1 KB.
-- **Caching.** Hashed build assets are `public, max-age=31536000, immutable`; pages are
+- **Caching.** Hashed build assets that exist are `public, max-age=31536000, immutable` (a 404 is never cached); pages are
   `no-cache` plus ETag, so a deploy is never served stale. API responses are `no-store`.
 
 ## Server-side caching (live, `curl`)

@@ -78,7 +78,7 @@ That includes Bandit security rules (`S`) and a ban on boolean positional flags 
   rules briefing.
 
 ## Measured
-- **Python:** 58 modules, 374 tests (unit, Hypothesis property, Schemathesis fuzz,
+- **Python:** 58 modules, 375 tests (unit, Hypothesis property, Schemathesis fuzz,
   conventions), 100% line coverage. ruff and `mypy --strict` are clean.
 - **Front end:** 44 TypeScript modules, no third-party script hosts. ESLint (type-aware strict),
   `tsc` and Prettier are clean. 48 Vitest tests; 96% statement and 91% branch coverage.

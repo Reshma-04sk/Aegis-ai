@@ -7,6 +7,7 @@ import logging
 import re
 import time
 import uuid
+from http import HTTPStatus
 from typing import TYPE_CHECKING
 
 from ..security import SECURITY_HEADERS
@@ -42,8 +43,9 @@ async def observe(
     response.headers.update(SECURITY_HEADERS)
     response.headers["X-Request-ID"] = request_id
     path = request.url.path
-    if path.startswith(IMMUTABLE_PREFIX):
-        # Built assets carry a content hash in their name, so a new deploy gets new URLs.
+    if path.startswith(IMMUTABLE_PREFIX) and response.status_code == HTTPStatus.OK:
+        # Built assets carry a content hash in their name, so a new deploy gets new URLs. Only a
+        # found file is immutable: a 404 during a deploy must never be cached for a year.
         response.headers["Cache-Control"] = "public, max-age=31536000, immutable"
         return response
     if not path.startswith("/api/"):

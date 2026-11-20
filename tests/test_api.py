@@ -3,9 +3,11 @@ import logging
 
 import pytest
 from conftest import make_snapshot
+from fastapi import Request, Response
 from fastapi.testclient import TestClient
 
 from aegis.api import Overrides, create_app
+from aegis.api.middleware import observe
 from aegis.config import Settings
 from aegis.errors import AirDataError, LocationNotFoundError
 
@@ -79,12 +81,26 @@ def test_security_headers_and_request_id():
 def test_cache_policy_and_compression():
     with client_for() as client:
         assert client.get("/api/health").headers["cache-control"] == "no-store"
-        # Hashed build assets never change under the same name; everything else revalidates.
-        hashed = client.get("/static/assets/landing-abc123.js").headers["cache-control"]
-        assert hashed == "public, max-age=31536000, immutable"
+        # A missing hashed asset (say, mid-deploy) must revalidate, never be cached for a year.
+        missing = client.get("/static/assets/landing-abc123.js")
+        assert missing.status_code == 404
+        assert missing.headers["cache-control"] == "no-cache"
         assert client.get("/static/img/icon.svg").headers["cache-control"] == "no-cache"
         plan = client.post("/api/plan", json=FULL, headers={"Accept-Encoding": "gzip"})
         assert plan.headers["content-encoding"] == "gzip"
+
+
+async def test_only_found_hashed_assets_are_immutable():
+    """Hashed build assets never change under the same name, so a found one is cached for a year."""
+
+    async def found(_request: Request) -> Response:
+        return Response("ok")
+
+    request = Request(
+        {"type": "http", "method": "GET", "path": "/static/assets/a-1.js", "headers": []}
+    )
+    response = await observe(request, found)
+    assert response.headers["cache-control"] == "public, max-age=31536000, immutable"
 
 
 def test_full_plan(caplog):

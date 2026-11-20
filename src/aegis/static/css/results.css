@@ -1,11 +1,7 @@
 /* Planner results: overview, station, members, schedule, chart, tables. */
 
 #results {
-  margin-top: 1.75rem;
   outline: none;
-}
-#results:empty {
-  margin: 0;
 }
 .lead {
   font-size: 1.1rem;
@@ -51,11 +47,11 @@
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
   padding: 0.45rem 0.7rem;
-  background: rgba(8, 18, 30, 0.35);
+  background: var(--well);
 }
 .pollutants .dominant {
   border-width: 2px;
-  border-color: var(--mist);
+  border-color: var(--ink);
 }
 .pollutants dt {
   font-size: 0.88rem;
@@ -69,13 +65,13 @@
   font-weight: 400;
 }
 .station {
-  border-left: 0.35rem solid var(--leaf);
+  border-left: 0.35rem solid var(--shield);
 }
 .overview {
-  border-left: 0.35rem solid var(--smog);
+  border-left: 0.35rem solid var(--ink);
 }
 .briefing {
-  border-left: 0.35rem solid var(--accent);
+  border-left: 0.35rem solid var(--dawn);
 }
 .members-grid {
   display: grid;
@@ -132,6 +128,13 @@
   font-size: 8px;
   fill: var(--muted);
 }
+/* The cleanest two hours, bracketed on every chart. */
+.window {
+  fill: none;
+  stroke: var(--dawn);
+  stroke-width: 2;
+  stroke-dasharray: 4 3;
+}
 table {
   width: 100%;
   border-collapse: collapse;
@@ -153,7 +156,7 @@ thead th {
   font-size: 0.9rem;
 }
 tr.current {
-  background: rgba(121, 180, 214, 0.14);
+  background: var(--well);
 }
 .table-scroll {
   overflow-x: auto;

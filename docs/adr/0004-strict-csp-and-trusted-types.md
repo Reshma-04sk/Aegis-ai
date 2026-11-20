@@ -20,6 +20,6 @@ AI-written briefings) and from users (names, notes). Any of these could contain 
   self only).
 
 ## Consequences
-- Some animation features that write style attributes (ScrollTrigger pinning) cannot be used,
-  so sticky sections use CSS instead.
+- Libraries that animate by writing style attributes cannot be used; the one animation is a
+  CSS transition.
 - `test_api.py::test_security_headers_and_request_id` asserts the policy on every route type.

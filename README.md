@@ -19,7 +19,7 @@
 | Code quality | [CODE_QUALITY.md](CODE_QUALITY.md) | Typed on both sides (mypy strict, tsc strict `--checkJs`), complexity ≤ 10, docstrings enforced |
 | Security | [SECURITY.md](SECURITY.md) | Strict CSP with Trusted Types, prompt-injection-proof decisions, CodeQL |
 | Efficiency | [EFFICIENCY.md](EFFICIENCY.md) | Lighthouse **100** for performance, accessibility, best practices and SEO on both pages, mobile and desktop; CLS 0 |
-| Testing | [TESTING.md](TESTING.md) | 371 backend tests at **100% coverage** (incl. property-based, API fuzzing and code-convention checks), 32 browser tests, OWASP ZAP scan |
+| Testing | [TESTING.md](TESTING.md) | 371 backend tests at **100% coverage** (incl. property-based, API fuzzing and code-convention checks), 28 browser tests, OWASP ZAP scan |
 | Accessibility | [ACCESSIBILITY.md](ACCESSIBILITY.md) | WCAG 2.1 AA: zero axe violations at 1440 px and 375 px |
 
 Design decisions: [docs/adr](docs/adr) (rules decide and AI explains; forecast and measurement
@@ -89,35 +89,34 @@ Browser ──▶ POST /api/plan ──▶ Open-Meteo geocoding + CAMS air quali
 
 ## Design
 Two pages: a landing page at `/` and the planner at `/plan` (`/plan?city=Delhi` prefills the city).
-The landing opens on a city skyline under winter smog. As you scroll, the haze and its drifting
-PM2.5 specks lift and the sky clears, which is the app's promise ("there is a cleaner hour") as one
-scroll-driven moment (GSAP ScrollTrigger, Lenis smooth scrolling; one `motion.js` serves both pages). Below it:
-- **Right now:** the live CAMS forecast and nearest station for five Indian cities, with the next
-  24 hours and the cleanest window. Real API data, labelled and dated like everywhere else.
-- **Why winter mornings are the worst:** a scroll-scrubbed diagram of the inversion lid lifting
-  through the day (CSS `position: sticky`; GSAP pinning is avoided because it writes style
-  attributes, which the CSP blocks).
-- **Households, how it decides, where the numbers come from, and FAQ.**
 
-On the planner, motion answers what you do: new household rows and optional sections ease
-open, the button shows progress, the page glides to the results, the cards rise in turn and the
-forecast bars grow. The sky then settles to match the plan's real AQI category: clear for Good,
-smog and drifting particles for Unhealthy and worse.
+AEGIS reads like an instrument in daylight. The landing opens with the promise on the left and,
+on the right, **today's air for a real city, hour by hour**: the live CAMS forecast as 24 bars in
+their EPA category colours, the cleanest two hours bracketed and named, the nearest official
+monitor's measured PM2.5 beside it, and a link to plan a day in that city. That strip is the one
+bold element, because when to go out is the decision the product exists for. Below it, plain
+sections: what the plan covers, why winter mornings are the worst (a static inversion diagram
+beside the three phases of the day), the people it is built for, how it decides, where the
+numbers come from, and questions.
 
-Content sits on solid, square-edged panels with a teal top rule, so nothing is re-blurred as the
-sky moves behind it, and the system cursor is never replaced. The skyline is hand-built SVG, so there are no stock photos to license and the page
-stays light. Type is Fraunces, a variable serif, for display and Atkinson Hyperlegible Next, a face
-designed for low-vision readers, for reading. Third-party scripts and fonts are not committed:
-`npm run vendor` (and the Docker build) copies them from npm, at the exact versions in
-`package-lock.json`, into `src/aegis/static/vendor`, so they are served from our own origin and
-the strict CSP stays intact.
+The planner puts the form beside the plan on wide screens (the form stays in view while you read
+the results) and stacks them on phones. Before the first plan, the results column says what to
+do.
+
+Motion is a single moment: when a city's data arrives, its hour bars grow from the baseline. With
+`prefers-reduced-motion` they are drawn at full height at once and scrolling is instant.
+
+The palette is cool mineral paper (`#e6edef`), slate ink (`#1b2b3a`), one shield green for actions
+(`#0e6b5c`) and an amber rule for the cleanest window (`#c98a1b`). Colour is otherwise reserved for
+the air itself, using the EPA category colours, darkened for text so every label passes AA. Type is
+Fraunces, a variable serif, for display and Atkinson Hyperlegible Next, a face designed for
+low-vision readers, for reading. There are no third-party scripts at all. The two fonts are not
+committed: `npm run vendor` (and the Docker build) copies them from npm, at the exact versions in
+`package-lock.json`, into `src/aegis/static/vendor`, so they are served from our own origin.
 
 | Asset | Package | License |
 |---|---|---|
-| `gsap.min.js`, `ScrollTrigger.min.js` | gsap 3.15.1 | GSAP Standard "no charge" license |
-| `lenis.min.js` | lenis 1.3.27 | MIT |
 | Fraunces, Atkinson Hyperlegible Next (latin, variable) | @fontsource-variable 5.3.0 | SIL Open Font License 1.1 |
-With `prefers-reduced-motion`, the sky starts clear, nothing animates and scrolling is native.
 
 ## Accessibility
 Skip link, landmarks and headings; every control is labelled; fieldsets for grouped choices;
@@ -139,7 +138,7 @@ that receives focus; the forecast is also available as a data table; visible foc
 | `static/js/dom.js` | Safe DOM builders (`textContent` only) shared by both pages |
 | `static/js/app.js`, `api.js`, `results.js`, `cards/` | Planner wiring, network calls, results region, one module per card |
 | `static/js/household.js`, `rows.js`, `storage.js`, `location.js` | Form rows, device storage, place or coordinates |
-| `static/js/live.js`, `motion/` | Landing live widget and motion |
+| `static/js/live.js` | The landing instrument: one city's next 24 hours, fetched when shown |
 
 ## Checks
 ```bash
@@ -150,7 +149,7 @@ uv run pytest          # 371 tests incl. property, fuzz and convention tests, 10
 node --test tests/js/  # front-end helpers
 npm ci && npm run vendor && npm run lint && npm run typecheck && npm run format:check
 npx playwright install chromium
-npx playwright test    # 32 browser tests at 1440px and 375px, incl. axe WCAG 2.1 AA scans
+npx playwright test    # 28 browser tests at 1440px and 375px, incl. axe WCAG 2.1 AA scans
 ```
 The browser tests run the real front end and API against fixed air data
 (`tests/e2e/fixture_app.py`), so they need no network or API key. They check the landing page (focus moves with in-page links, reduced motion), the whole flow,
@@ -164,7 +163,7 @@ CI runs all of the above plus `pip-audit`, `npm audit`, CodeQL and an OWASP ZAP 
 ```bash
 cp .env.example .env    # optional: GEMINI_API_KEY (else rule-based briefing),
                         # OPENAQ_API_KEY (else no station card)
-npm ci --omit=dev && npm run vendor   # fetch GSAP, Lenis and fonts from npm
+npm ci --omit=dev && npm run vendor   # fetch the two fonts from npm
 uv run --env-file .env uvicorn aegis.main:app --reload
 # open http://localhost:8000
 ```

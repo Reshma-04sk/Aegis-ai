@@ -25,10 +25,11 @@ Lighthouse's Agentic Browsing category also scores 100 on all four runs.
   - The planner module runs with `blocking="render"` and `modulepreload`, so saved form rows
     exist before the first paint.
   - Browser tests now fail if CLS goes above 0.05.
-- **No build, no framework.** Plain ES modules (about 17 KB of app JavaScript in total, gzipped), served
-  same-origin. The only third-party code is the vendored GSAP and Lenis, loaded with `defer`.
-- **Compression.** `GZipMiddleware` for responses over 1 KB. HTML is 16.7 KB raw and 5.9 KB on
-  the wire; CSS is 25.4 KB raw and 6.5 KB; a full plan's JSON is 4.6 KB raw and 1.5 KB.
+- **No build, no framework, no third-party scripts.** Plain ES modules (about 15 KB of app
+  JavaScript in total, gzipped), served same-origin. The animation libraries AETHER-style scroll
+  scenes need were never added: the only motion is a CSS transition.
+- **Compression.** `GZipMiddleware` for responses over 1 KB. HTML is 13.4 KB raw and 4.8 KB on
+  the wire; CSS is 20.2 KB raw and 5.4 KB; a full plan's JSON is 4.6 KB raw and 1.5 KB.
 - **Caching.** Static files are sent with `Cache-Control: no-cache` plus ETag, so they are
   revalidated cheaply and a deploy is never served stale. API responses are `no-store`.
 
@@ -62,12 +63,9 @@ OpenAQ station lookup). A hit is network round trip only, about **95% faster**.
 ## Front-end runtime
 - **Lazy data.** The landing page fetches live city data only when that section nears the
   viewport (`IntersectionObserver`), so a quick visit costs no API call.
-- **Idle canvas costs nothing.** On a clear sky the particle canvas stops redrawing.
-- **No backdrop blur.** Panels are solid, so the moving sky behind them never forces a
-  per-frame blur of every panel above it.
-- **Compositor-only animation.** Motion uses transforms and opacity. The pointer glow is one
-  fixed-size layer moved by `transform`, so it never repaints the panel.
-- **Reduced motion** turns off all of it: no animation loop, no smooth scrolling.
+- **Nothing runs per frame.** No canvas, no animation loop, no scroll listeners, no backdrop blur.
+- **One compositor-only transition.** The hour bars grow with `transform`, once per city.
+- **Reduced motion** draws them at full height and makes scrolling instant.
 
 ## Reproduce
 ```bash

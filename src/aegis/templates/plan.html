@@ -2,7 +2,6 @@
 {% set title = "Plan your day – AEGIS" %}
 {% set description = "Plan your household’s day around the smog: a verdict for each person, the cleanest "
   ~ "hours for each plan, indoor air steps and greener trips." %}
-{% set html_class = "sky-is-clear" %}
 {% set nav = [
   {"href": "/", "text": "Home"},
   {"href": "/#how", "text": "How it decides"},
@@ -19,11 +18,19 @@
     <script type="module" src="/static/js/app.js" blocking="render"></script>
 {% endblock %}
 {% block content %}
-  <section class="band planner" id="planner" aria-labelledby="planner-title">
-    <div class="glass wide">
-      <h1 id="planner-title" class="reveal-words">Plan your family&#8217;s day</h1>
-      {% include "partials/planner/form.html" %}
-      <section id="results" aria-live="polite" aria-busy="false" tabindex="-1" aria-label="Your plan"></section>
+  <section class="planner" id="planner" aria-labelledby="planner-title">
+    <div class="planner-grid">
+      <div class="planner-form">
+        <h1 id="planner-title">Plan your family&#8217;s day</h1>
+        {% include "partials/planner/form.html" %}
+      </div>
+      <section id="results" aria-live="polite" aria-busy="false" tabindex="-1" aria-label="Your plan">
+        <div class="empty-state">
+          <h2>Your plan appears here</h2>
+          <p>Enter a city and press Plan my day. You get a verdict for each person, the cleanest hours
+            for each plan, steps for the air at home and, if you add a commute, a greener option.</p>
+        </div>
+      </section>
     </div>
   </section>
 {% endblock %}

@@ -1,11 +1,10 @@
-// "Right now" on the landing page: live forecast + nearest station for a few cities.
+// Hero instrument on the landing page: today's air, hour by hour, for a few cities.
 // Real data only (POST /api/plan, cached server-side); text via textContent, never innerHTML.
 import { ageText, fmt, hourLabel } from "./format.js";
 import { byId, categoryBadge, el } from "./dom.js";
 import { LIVE_CHART, barChart } from "./chart.js";
 import { STALE_TEXT, categoryOf } from "./config.js";
 import { postPlan } from "./api.js";
-import { countUp } from "./count-up.js";
 
 /** @typedef {import("#api").PlanResponse} PlanResponse */
 
@@ -42,14 +41,13 @@ function stationLine(s) {
 }
 
 /**
- * Place, AQI (counted up), category and data age.
+ * Place, AQI, category and data age.
  * @param {PlanResponse} d
- * @param {HTMLElement} value the span the AQI is counted into
  */
-function nowSummary(d, value) {
+function nowSummary(d) {
   const left = el("div", undefined, "live-now");
   const num = el("p", undefined, `live-aqi cat-${categoryOf(d.aqi)?.key ?? "unknown"}`);
-  num.append(value, el("span", "US AQI forecast now", "unit"));
+  num.append(el("span", String(Math.round(d.aqi))), el("span", "US AQI forecast now", "unit"));
   const stale = d.provenance.stale ? ` ${STALE_TEXT}` : "";
   const age = el(
     "p",
@@ -65,16 +63,13 @@ function nowSummary(d, value) {
  * @param {string} city
  */
 function render(d, city) {
-  const value = el("span", "0");
-  const left = nowSummary(d, value);
+  const left = nowSummary(d);
   const station = stationLine(d.station);
   if (station) left.append(station);
   const cta = el("a", `Plan a day in ${city}`, "button");
   cta.href = `/plan?city=${encodeURIComponent(city)}`;
-  left.append(cta);
-  box.replaceChildren(left, chart(d));
+  box.replaceChildren(left, chart(d), cta);
   box.setAttribute("aria-busy", "false");
-  countUp(value, Math.round(d.aqi));
   requestAnimationFrame(() => requestAnimationFrame(() => box.classList.add("is-in")));
 }
 

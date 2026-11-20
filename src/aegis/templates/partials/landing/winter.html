@@ -1,33 +1,28 @@
-<section class="winter" id="winter" aria-labelledby="winter-title">
-  <div class="winter-sticky">
-    <div class="glass wide winter-panel">
-      <div class="winter-text">
-        <h2 id="winter-title">Why winter mornings are the worst</h2>
-        <ol class="phases" role="list">
-          <li class="phase is-active" data-phase="0"><h3>Night</h3><p>The ground cools fast.
-            Warmer air settles on top like a lid, and smoke from traffic, cooking and burning
-            waste stays trapped underneath.</p></li>
-          <li class="phase" data-phase="1"><h3>Morning</h3><p>The lid is still low. Everything
-            emitted overnight is packed into a thin layer of air, right where people walk and
-            breathe.</p></li>
-          <li class="phase" data-phase="2"><h3>Afternoon</h3><p>Sunlight warms the ground, the lid
-            lifts and the same smoke spreads through a much deeper layer. The air at street level
-            is usually at its cleanest.</p></li>
-        </ol>
-        <p class="help">That is why AEGIS reads the forecast mixing height, not just the AQI, when
-          it picks your hours.</p>
-      </div>
-      <svg class="inversion" viewBox="0 0 400 300" role="img" aria-labelledby="inversion-title">
-        <title id="inversion-title">Diagram: a warm-air lid traps smog low over the city at night
-          and lifts by the afternoon, letting the smog spread out.</title>
-        <rect class="inv-sky" x="0" y="0" width="400" height="300"/>
-        <circle class="inv-sun" cx="330" cy="250" r="22"/>
-        <rect class="inv-smog" x="0" y="200" width="400" height="80"/>
-        <line class="inv-lid" x1="0" y1="200" x2="400" y2="200"/>
-        <text class="inv-label" x="12" y="192">warm-air lid</text>
-        <path class="inv-city" d="M0
-          300V262h24v-18h20v26h18v-34h26v22h14v-14h22v30h20v-40h28v40h16v-22h24v12h20v-28h26v34h18v-16h22v26h18v-30h24v20h20v-12h22V262H400V300z"/>
-      </svg>
+<section class="band" id="winter" aria-labelledby="winter-title">
+  <h2 id="winter-title">Why winter mornings are the worst</h2>
+  <div class="inversion-layout">
+    <div>
+      <ol class="phases">
+        <li><h3>Night</h3><p>The ground cools fast. Warmer air settles on top like a lid, and smoke
+          from traffic, cooking and burning waste stays trapped underneath.</p></li>
+        <li><h3>Morning</h3><p>The lid is still low. Everything emitted overnight is packed into a
+          thin layer of air, right where people walk and breathe.</p></li>
+        <li><h3>Afternoon</h3><p>Sunlight warms the ground, the lid lifts and the same smoke spreads
+          through a much deeper layer. The air at street level is usually at its cleanest.</p></li>
+      </ol>
+      <p class="help">That is why AEGIS reads the forecast mixing height, not just the AQI, when it
+        picks your hours.</p>
     </div>
+    <svg class="inversion" viewBox="0 0 400 300" role="img" aria-labelledby="inversion-title">
+      <title id="inversion-title">Diagram: a warm-air lid traps smog low over the city in the
+        morning; by the afternoon the lid has lifted and the smog spreads out.</title>
+      <rect class="inv-sky" x="0" y="0" width="400" height="300"/>
+      <circle class="inv-sun" cx="330" cy="60" r="20"/>
+      <rect class="inv-smog" x="0" y="200" width="400" height="80"/>
+      <line class="inv-lid" x1="0" y1="200" x2="400" y2="200"/>
+      <text class="inv-label" x="12" y="192">warm-air lid</text>
+      <path class="inv-city" d="M0
+        300V262h24v-18h20v26h18v-34h26v22h14v-14h22v30h20v-40h28v40h16v-22h24v12h20v-28h26v34h18v-16h22v26h18v-30h24v20h20v-12h22V262H400V300z"/>
+    </svg>
   </div>
 </section>

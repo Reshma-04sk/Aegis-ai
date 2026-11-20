@@ -1,0 +1,43 @@
+/* Planner page: the form beside the plan on wide screens, stacked on narrow ones. */
+
+.planner {
+  max-width: var(--page);
+  margin: 0 auto;
+  padding: clamp(1.5rem, 4vw, 3rem) var(--gutter);
+}
+.planner h1 {
+  font-size: var(--step-3);
+  margin-bottom: 0.5rem;
+}
+.planner-grid {
+  display: grid;
+  gap: clamp(1.5rem, 4vw, 3rem);
+  align-items: start;
+}
+@media (min-width: 64rem) {
+  .planner-grid {
+    grid-template-columns: minmax(22rem, 26rem) 1fr;
+  }
+  .planner-form {
+    position: sticky;
+    top: 5rem;
+    max-height: calc(100vh - 6rem);
+    overflow-y: auto;
+    padding-right: 0.5rem;
+  }
+}
+.empty-state {
+  border: 1px dashed var(--rule);
+  border-radius: var(--radius);
+  padding: 2rem 1.5rem;
+  color: var(--muted);
+  background: var(--panel);
+}
+.empty-state h2 {
+  font-size: var(--step-2);
+  color: var(--ink);
+  margin-bottom: 0.5rem;
+}
+.empty-state p:last-child {
+  margin: 0;
+}

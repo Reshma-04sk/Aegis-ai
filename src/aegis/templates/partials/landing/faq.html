@@ -1,24 +1,22 @@
-<section class="band" id="faq" tabindex="-1" aria-labelledby="faq-title">
-  <div class="glass wide faq">
-    <h2 id="faq-title">Questions people ask</h2>
-    <details><summary>Is this medical advice?</summary><p>No. AEGIS turns public air-quality data and
-      published guidance into a daily plan. Follow your doctor&#8217;s advice and your local health
-      authority&#8217;s alerts, and seek care for chest pain or severe breathlessness.</p></details>
-    <details><summary>Where do the numbers come from?</summary><p>Forecasts come from the Copernicus
-      Atmosphere Monitoring Service through Open-Meteo. Station readings come from OpenAQ, which carries
-      government networks such as India&#8217;s CPCB. Google Gemini only writes the briefing
-      text.</p></details>
-    <details><summary>What happens to my household details?</summary><p>They are saved in your browser
-      so you don&#8217;t have to retype them. To build a plan they are sent to AEGIS&#8217;s server,
-      kept in memory for at most five minutes to write the briefing, and never written to disk or
-      logged. Avoid putting names in the free-text note, because that note is passed to the
-      AI.</p></details>
-    <details><summary>Does it work outside India?</summary><p>Yes. The CAMS forecast covers the whole
-      world. The station card appears wherever OpenAQ has a monitor within {{ config.stationRadiusKm }} km that has reported in
-      the last {{ config.stationRecentHours }} hours.</p></details>
-    <details><summary>Why can the forecast and the station disagree?</summary><p>A station measures one
-      spot, and a busy road or a nearby fire can push it up or down. The forecast estimates an average
-      over a wider area. AEGIS shows both so you can judge, and plans with the forecast because it
-      looks ahead.</p></details>
-  </div>
+<section class="band faq" id="faq" tabindex="-1" aria-labelledby="faq-title">
+  <h2 id="faq-title">Questions people ask</h2>
+  <details><summary>Is this medical advice?</summary><p>No. AEGIS turns public air-quality data and
+    published guidance into a daily plan. Follow your doctor&#8217;s advice and your local health
+    authority&#8217;s alerts, and seek care for chest pain or severe breathlessness.</p></details>
+  <details><summary>Where do the numbers come from?</summary><p>Forecasts come from the Copernicus
+    Atmosphere Monitoring Service through Open-Meteo. Station readings come from OpenAQ, which carries
+    government networks such as India&#8217;s CPCB. Google Gemini only writes the briefing
+    text.</p></details>
+  <details><summary>What happens to my household details?</summary><p>They are saved in your browser
+    so you don&#8217;t have to retype them. To build a plan they are sent to AEGIS&#8217;s server,
+    kept in memory for at most five minutes to write the briefing, and never written to disk or
+    logged. Avoid putting names in the free-text note, because that note is passed to the
+    AI.</p></details>
+  <details><summary>Does it work outside India?</summary><p>Yes. The CAMS forecast covers the whole
+    world. The station card appears wherever OpenAQ has a monitor within {{ config.stationRadiusKm }} km that has reported in
+    the last {{ config.stationRecentHours }} hours.</p></details>
+  <details><summary>Why can the forecast and the station disagree?</summary><p>A station measures one
+    spot, and a busy road or a nearby fire can push it up or down. The forecast estimates an average
+    over a wider area. AEGIS shows both so you can judge, and plans with the forecast because it
+    looks ahead.</p></details>
 </section>

@@ -46,5 +46,5 @@ def test_pages_embed_the_config_and_render_choices_from_enums():
         assert f'<option value="{mode}">{label}</option>' in planner
     for group in Group:
         assert f'value="{group}"' in planner
-    assert 'class="sky-is-clear"' in planner and 'class="sky-is-clear"' not in landing
+    assert 'id="live"' in landing and 'id="results"' in planner
     assert "within 25 km" in landing  # limits in the copy come from the station constants

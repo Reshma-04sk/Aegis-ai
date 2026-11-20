@@ -7,19 +7,19 @@ Every rule on this page fails CI when broken; none relies on review alone.
 
 ```
 Browser (no build step, ES modules)            FastAPI (src/aegis)
-  app.js        wiring and events                api/          app factory, routes, middleware, services, throttle
-  api.js        the only network calls           service.py    build_plan(): assembles one plan from the engines
-  results.js    results region and briefing        rules/        verdicts, cleanest window, advice registries
-  render.js     card order                         planner/      schedule + personal dose per activity
-  cards/        one result card per module         indoor.py     purifier sizing, airing window
-  location.js   place or coordinates               commute/      emission factors (macro) and comparison
-  rows.js       form row mechanics                 exposure.py   inhaled-dose formula (micro), shared
-  household.js  member and activity rows           aqi.py        EPA breakpoints and categories
-  storage.js    this-device persistence            airdata/      Open-Meteo adapter, parser, provider port
-  dom.js        the only DOM builder               stations/     OpenAQ adapter, pure helpers, provider port
-  format.js     pure helpers (unit-tested)         advisor/      Gemini adapter, rules briefing, facts, port
-  motion/       headline, sky, particles, scroll and results motion         models/       Pydantic v2 contract, split by domain
-  types/api.d.ts  the API contract for tsc       fetch.py, cache.py, errors.py, freshness.py   shared infrastructure
+  app.js        wiring and events               api/          app factory, routes, middleware, services, throttle
+  api.js        the only network calls          service.py    build_plan(): assembles one plan from the engines
+  results.js    results region and briefing     rules/        verdicts, cleanest window, advice registries
+  render.js     card order                      planner/      schedule + personal dose per activity
+  cards/        one result card per module      indoor.py     purifier sizing, airing window
+  location.js   place or coordinates            commute/      emission factors (macro) and comparison
+  rows.js       form row mechanics              exposure.py   inhaled-dose formula (micro), shared
+  household.js  member and activity rows        aqi.py        EPA breakpoints and categories
+  storage.js    this-device persistence         airdata/      Open-Meteo adapter, parser, provider port
+  dom.js        the only DOM builder            stations/     OpenAQ adapter, pure helpers, provider port
+  format.js     pure helpers (unit-tested)      advisor/      Gemini adapter, rules briefing, facts, port
+  live.js       landing instrument (hour strip) models/       Pydantic v2 contract, split by domain
+  types/api.d.ts  the API contract for tsc      fetch.py, cache.py, errors.py, freshness.py   shared infrastructure
 ```
 
 Dependencies point inwards. The engines (`rules`, `planner`, `indoor`, `commute`, `exposure`,
@@ -76,8 +76,8 @@ That includes Bandit security rules (`S`) and a ban on boolean positional flags 
 ## Measured
 - **Python:** 58 modules, 371 tests (unit, Hypothesis property, Schemathesis fuzz,
   conventions), 100% line coverage. ruff and `mypy --strict` are clean.
-- **Front end:** 33 ES modules. ESLint, `tsc` and Prettier are clean. 6 `node:test` unit tests.
-- **End to end:** 32 Playwright tests at 1440 px and 375 px, including axe WCAG 2.1 AA.
+- **Front end:** 21 ES modules and no third-party scripts. ESLint, `tsc` and Prettier are clean. 6 `node:test` unit tests.
+- **End to end:** 28 Playwright tests at 1440 px and 375 px, including axe WCAG 2.1 AA.
 
 ## Reproduce
 ```bash

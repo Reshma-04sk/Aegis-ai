@@ -33,7 +33,7 @@ test runs in CI on every push.
 | R12 | Data age everywhere; stale after 3 hours | `freshness.py` (`STALE_AFTER_MINUTES = 180`), `airdata/parse.py`, `stations/observation.py`, `static/js/cards/overview.js`, `cards/station.js` | `test_airdata.py::test_provenance_age_and_staleness`, `test_stations.py::test_invalid_values_stay_missing_and_old_readings_are_stale` |
 | R13 | Never invent data: missing stays missing | `airdata/parse.py` (`_num`), `stations/values.py` (`measured_value` rejects NaN, infinity, negatives, booleans) | `test_airdata.py::test_parse_uses_current_hour_and_keeps_missing_values`, `test_stations.py::test_non_finite_or_non_numeric_values_stay_missing` |
 | R14 | No medical claims; point to official guidance | `rules/advice/actions.py` (`urgent_help`), `models/plan.py` (disclaimer) | `test_rules.py::test_avoid_points_to_health_authority_without_diagnosis` |
-| R15 | Usable by everyone (WCAG 2.1 AA, keyboard, reduced motion) | Semantic HTML, `dom.js` badges (icon + text, never colour alone) | 32 Playwright tests with axe at 1440 px and 375 px; see [ACCESSIBILITY.md](ACCESSIBILITY.md) |
+| R15 | Usable by everyone (WCAG 2.1 AA, keyboard, reduced motion) | Semantic HTML, `dom.js` badges (icon + text, never colour alone) | 28 Playwright tests with axe at 1440 px and 375 px; see [ACCESSIBILITY.md](ACCESSIBILITY.md) |
 | R16 | Private by default | Household kept in `localStorage` only; coordinates rounded to 3 decimals; nothing persisted server-side | `static/js/storage.js`, `location.js`; see [SECURITY.md](SECURITY.md) |
 
 ## Design rules that keep the answers trustworthy

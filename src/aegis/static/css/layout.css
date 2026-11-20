@@ -1,16 +1,5 @@
-/* Page chrome: solid square-edged panels, the top bar and the landing hero. */
+/* Page chrome: the top bar, page sections, buttons and the footer. */
 
-.glass {
-  background: var(--glass);
-  border: 1px solid var(--glass-edge);
-  border-top: 3px solid var(--clear);
-  border-radius: var(--radius-lg);
-  box-shadow:
-    0 1px 0 rgba(255, 255, 255, 0.08) inset,
-    0 24px 60px -30px rgba(4, 10, 18, 0.8);
-}
-
-/* ---------------------------------------------------------------- top bar */
 .topbar {
   position: sticky;
   top: 0;
@@ -19,35 +8,34 @@
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
-  padding: 0.75rem clamp(1rem, 4vw, 2.5rem);
-  background: rgba(11, 31, 27, 0.96);
-  border-bottom: 1px solid var(--glass-edge);
+  padding: 0.6rem var(--gutter);
+  background: var(--panel);
+  border-bottom: 1px solid var(--rule);
 }
 .brand {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  color: var(--mist);
+  color: var(--ink);
   text-decoration: none;
   font-family: var(--display);
-  font-weight: 800;
+  font-weight: 700;
   font-size: 1.35rem;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.02em;
 }
 .brand svg {
-  width: 1.9rem;
-  height: 1.9rem;
+  width: 1.8rem;
+  height: 1.8rem;
   fill: none;
-  stroke: var(--clear);
-  stroke-width: 2.4;
+  stroke-width: 2;
   stroke-linecap: round;
 }
 .brand svg .shield {
-  stroke: var(--accent);
-  stroke-width: 2;
+  fill: var(--shield);
+  stroke: var(--shield);
 }
-.brand svg .sun-line {
-  stroke: var(--sun);
+.brand svg .air-line {
+  stroke: var(--panel);
 }
 .topbar nav {
   display: flex;
@@ -55,10 +43,9 @@
   gap: clamp(0.75rem, 2vw, 1.75rem);
 }
 .topbar nav a {
-  color: var(--mist);
+  color: var(--ink);
   text-decoration: none;
   font-weight: 600;
-  font-size: 0.98rem;
   min-height: 2.75rem;
   display: inline-flex;
   align-items: center;
@@ -69,12 +56,12 @@
 .topbar .nav-cta {
   padding: 0 1.1rem;
   border-radius: var(--radius-sm);
-  background: var(--mist);
-  color: var(--dusk);
+  background: var(--shield);
+  color: var(--accent-fg);
 }
 .topbar .nav-cta:hover {
   text-decoration: none;
-  background: #fff;
+  background: var(--accent-hover);
 }
 @media (max-width: 47.99rem) {
   .topbar nav a:not(.nav-cta) {
@@ -82,57 +69,21 @@
   }
 }
 
-.hero {
-  min-height: calc(100svh - 4.5rem);
-  display: grid;
-  align-content: center;
-  justify-items: center;
-  text-align: center;
-  padding: 3rem clamp(1rem, 5vw, 4rem) 4rem;
-  position: relative;
+/* A page section: content on the page grid, separated from the next by a rule. */
+.band {
+  max-width: var(--page);
+  margin: 0 auto;
+  padding: clamp(2.5rem, 6vw, 4.5rem) var(--gutter);
+  border-top: 1px solid var(--rule);
 }
-.hero-copy {
-  max-width: 46rem;
-  padding: clamp(1.5rem, 4vw, 3rem);
+.band > h2 {
+  font-size: var(--step-3);
+  max-width: var(--measure);
+  margin-bottom: 1.5rem;
 }
-.hero h1 {
-  font-size: clamp(2.5rem, 6vw, 4.75rem);
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  line-height: 1.02;
-  text-wrap: balance;
-  margin-bottom: 1.25rem;
-}
-.hero-lede {
-  font-size: clamp(1.08rem, 1.6vw, 1.25rem);
-  max-width: 36rem;
-  margin-inline: auto;
-  color: var(--mist);
-}
-.hero-actions {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 0.75rem;
-  margin: 1.75rem 0 1rem;
-}
-.hero-note {
-  color: var(--muted);
-  font-size: 0.95rem;
-  margin: 0;
-}
-.scroll-cue {
-  position: absolute;
-  left: 50%;
-  bottom: 1.25rem;
-  transform: translateX(-50%);
-  margin: 0;
-  color: var(--mist);
-  font-size: 0.95rem;
-  padding: 0.35rem 0.9rem;
-  border-radius: var(--radius-sm);
-  background: rgba(16, 28, 44, 0.6);
-  white-space: nowrap;
+.band h3 {
+  font-size: var(--step-1);
+  margin-bottom: 0.4rem;
 }
 
 /* Link styled as a button, and real buttons */
@@ -151,27 +102,20 @@ button {
   border: 2px solid var(--accent);
   background: var(--accent);
   color: var(--accent-fg);
-  transition:
-    background-color 0.15s,
-    transform 0.15s;
+  transition: background-color 0.15s;
 }
 .button:hover,
 button:hover {
   background: var(--accent-hover);
 }
-.button:active,
-button:active {
-  transform: translateY(1px);
-}
 .button.ghost,
 button.secondary {
   background: transparent;
-  color: var(--mist);
-  border-color: rgba(238, 243, 246, 0.55);
+  color: var(--accent);
 }
 .button.ghost:hover,
 button.secondary:hover {
-  background: rgba(238, 243, 246, 0.1);
+  background: var(--well);
 }
 button.small {
   padding: 0.35rem 1rem;
@@ -183,9 +127,23 @@ button.link {
   color: var(--accent);
   text-decoration: underline;
   padding: 0.5rem 0.25rem;
-  border-radius: 0.3rem;
 }
 button:disabled {
   opacity: 0.6;
   cursor: progress;
+}
+
+.site-footer {
+  max-width: var(--page);
+  margin: 0 auto;
+  padding: 1.5rem var(--gutter) 2.5rem;
+  border-top: 1px solid var(--rule);
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+.site-footer p {
+  max-width: 52rem;
+}
+.site-footer p:last-child {
+  margin: 0;
 }

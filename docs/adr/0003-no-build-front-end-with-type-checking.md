@@ -9,8 +9,8 @@ untyped JavaScript drifts from the API contract.
 
 ## Decision
 - Plain ES modules served directly by FastAPI. There is no bundler and no runtime framework.
-  Animation libraries (GSAP, Lenis) and fonts are vendored and same-origin, so the CSP stays
-  `script-src 'self'`.
+  There are no third-party scripts; the two fonts are vendored and same-origin, so the CSP
+  stays `script-src 'self'`.
 - Types without a build: `types/api.d.ts` mirrors `models/`, and every module is checked
   with `tsc --checkJs --strict` through JSDoc. ESLint and Prettier run in CI.
 - Modules have single responsibilities: `dom.js` (safe builders), `household.js` and `rows.js`

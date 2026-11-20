@@ -4,13 +4,12 @@
   ~ "how to keep indoor air clean, and what a greener commute changes, from the CAMS forecast "
   ~ "and the nearest official monitor." %}
 {% set nav = [
-  {"href": "#now", "text": "Right now", "scroll": true},
-  {"href": "#how", "text": "How it decides", "scroll": true},
-  {"href": "#faq", "text": "Questions", "scroll": true},
+  {"href": "#how", "text": "How it decides"},
+  {"href": "#faq", "text": "Questions"},
   {"href": "/plan", "text": "Plan my day", "cta": true},
 ] %}
 {% block content %}
-  {% for section in ("hero", "now", "features", "winter", "people", "how", "data", "faq", "closing") %}
+  {% for section in ("hero", "features", "winter", "people", "how", "data", "faq", "closing") %}
   {% include "partials/landing/" ~ section ~ ".html" %}
   {% endfor %}
 {% endblock %}

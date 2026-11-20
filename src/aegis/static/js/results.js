@@ -40,9 +40,8 @@ async function upgradeBriefing(id) {
 export function showPlan(d) {
   results.replaceChildren(...renderPlan(d));
   results.focus({ preventScroll: true });
-  // motion.js glides to the results when smooth scrolling is on; otherwise jump there.
-  if (!document.documentElement.classList.contains("lenis")) results.scrollIntoView({ block: "start" });
-  document.dispatchEvent(new CustomEvent("aegis:results", { detail: { aqi: d.aqi } }));
+  // Smooth by default; the reduced-motion rule in foundation.css makes this an instant jump.
+  results.scrollIntoView({ block: "start" });
   if (d.briefing_id) upgradeBriefing(d.briefing_id);
 }
 

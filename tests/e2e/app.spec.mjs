@@ -110,45 +110,12 @@ test.describe("planner", () => {
     expect(duration).toBe("0s");
   });
 
-  test("the sky follows the plan's real AQI, and new rows ease in", async ({ page }) => {
-    const haze = () => page.locator(".haze-1").evaluate((e) => Number(getComputedStyle(e).opacity));
-    expect(await haze()).toBeLessThan(0.05); // clear before any plan
+  test("before a plan, the results column says what to do; adding a person adds a row", async ({ page }) => {
+    await expect(page.getByRole("heading", { name: "Your plan appears here" })).toBeVisible();
     await page.getByRole("button", { name: "+ Add a person" }).click();
     await expect(page.locator("#members > li")).toHaveCount(2);
-    await planFor(page, "Delhi"); // fixture AQI 170, Unhealthy
-    await expect(page.locator("#results")).not.toHaveAttribute("data-animating", "true");
-    await expect.poll(haze, { timeout: 6000 }).toBeGreaterThan(0.5);
-  });
-
-  test("the city rises behind the form as you scroll; a mouse lights the glass", async ({
-    page,
-    isMobile,
-  }) => {
-    const treesY = () =>
-      page.locator(".trees").evaluate((e) => new DOMMatrix(getComputedStyle(e).transform).f);
-    expect(await treesY()).toBeGreaterThan(-1);
-    await page.mouse.wheel(0, 1200);
-    await expect.poll(treesY, { timeout: 4000 }).toBeLessThan(-20);
-    const panel = page.locator(".planner > .glass");
-    if (isMobile) {
-      await expect(panel).not.toHaveClass(/has-glow/); // touch: no pointer light
-    } else {
-      await page.mouse.move(600, 400);
-      await page.mouse.move(640, 420, { steps: 3 });
-      await expect(panel).toHaveClass(/is-lit/);
-    }
-  });
-
-  test("reduced motion: the planner sky stays still", async ({ page }) => {
-    await page.emulateMedia({ reducedMotion: "reduce" });
-    await page.goto("/plan");
     await planFor(page, "Delhi");
-    await expect(page.locator("#results")).toBeFocused();
-    await page.waitForTimeout(800);
-    expect(await page.locator(".haze-1").evaluate((e) => Number(getComputedStyle(e).opacity))).toBeLessThan(
-      0.05,
-    );
-    await expect(page.locator("html")).not.toHaveClass(/lenis/);
+    await expect(page.getByRole("heading", { name: "Your plan appears here" })).toHaveCount(0);
   });
 
   test("a city chosen on the landing page prefills the planner", async ({ page }) => {
@@ -175,7 +142,7 @@ test.describe("landing", () => {
       /Plan your family’s day around winter smog/,
     );
     for (const name of [
-      "Right now, city by city",
+      "Today’s air, hour by hour",
       "One plan for everyone at home",
       "Why winter mornings are the worst",
       "For the people you worry about",
@@ -185,9 +152,11 @@ test.describe("landing", () => {
     ]) {
       await expect(page.getByRole("heading", { level: 2, name })).toBeAttached();
     }
-    await page.locator("#now").scrollIntoViewIfNeeded();
     await expect(page.getByText("Delhi, Test State")).toBeVisible();
     await expect(page.locator(".live-aqi")).toContainText("170");
+    // The hero instrument brackets the cleanest two hours and says which they are.
+    await expect(page.locator(".live-chart .window")).toHaveCount(1);
+    await expect(page.locator(".live-chart figcaption")).toContainText("Cleanest two hours");
     await expect(page.getByText(/Measured at Fixture Road \(CPCB\)/)).toBeVisible();
     await expect(page.getByRole("link", { name: "Plan a day in Delhi" })).toHaveAttribute(
       "href",
@@ -203,7 +172,6 @@ test.describe("landing", () => {
 
   test("city chips switch the live forecast and announce the pressed city", async ({ page }) => {
     await page.goto("/");
-    await page.locator("#now").scrollIntoViewIfNeeded();
     await expect(page.getByText("Delhi, Test State")).toBeVisible();
     await page.getByRole("button", { name: "Mumbai" }).click();
     await expect(page.getByRole("button", { name: "Mumbai" })).toHaveAttribute("aria-pressed", "true");
@@ -211,11 +179,10 @@ test.describe("landing", () => {
     await expect(page.getByText("Mumbai, Test State")).toBeVisible();
   });
 
-  test("calls to action open the planner; in-page links move focus", async ({ page }) => {
+  test("calls to action open the planner and explain the method", async ({ page }) => {
     await page.goto("/");
-    await page.getByRole("link", { name: "See the air right now" }).click();
-    await expect(page.locator("#now")).toBeFocused();
-    await expect(page).toHaveURL(/#now$/);
+    await page.getByRole("link", { name: "How it decides" }).last().click();
+    await expect(page).toHaveURL(/#how$/);
     await page.getByRole("link", { name: "Plan my family’s day" }).first().click();
     await expect(page).toHaveURL(/\/plan$/);
     await expect(page.getByRole("heading", { level: 1, name: "Plan your family’s day" })).toBeVisible();
@@ -229,14 +196,14 @@ test.describe("landing", () => {
     await expect(page.getByText("turns public air-quality data and published guidance")).toBeVisible();
   });
 
-  test("reduced motion: clear sky and native scrolling", async ({ page }) => {
+  test("reduced motion: the hour bars are drawn at full height at once", async ({ page }) => {
     await page.emulateMedia({ reducedMotion: "reduce" });
     await page.goto("/");
-    const html = page.locator("html");
-    await expect(html).toHaveClass(/sky-is-clear/);
-    await expect(html).not.toHaveClass(/lenis/);
-    await expect(page.locator(".scroll-cue")).toBeHidden();
-    await page.getByRole("link", { name: "See the air right now" }).click();
-    await expect(page.locator("#now")).toBeFocused();
+    await expect(page.locator(".live-chart .bar").first()).toBeVisible();
+    const transform = await page
+      .locator(".live-chart .bar")
+      .first()
+      .evaluate((e) => getComputedStyle(e).transform);
+    expect(transform).toBe("none");
   });
 });

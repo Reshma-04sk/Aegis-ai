@@ -17,17 +17,24 @@ client in India, on 20 Nov 2026. Front-end figures are from the local production
 |---|---|---|---|---|
 | Cumulative Layout Shift (fresh browser, fixture data) | 0.0019 | 0.0002 | 0 | 0.0004 |
 
-Lighthouse has **not yet been re-run** on the rebuilt front end. The scores below are from the
-previous (no-build) front end on the live site and will be replaced after the next deploy.
+## Lighthouse 13.6 (live site, via PageSpeed Insights, 21 Nov 2026)
 
-## Lighthouse 13.6 (live site, previous front end)
+| Page | Device | Performance | Accessibility | Best practices | SEO | FCP | LCP | TBT | CLS |
+|---|---|---|---|---|---|---|---|---|---|
+| `/` | Mobile | **99** | **100** | **100** | **100** | 0.8 s | 0.8 s | 0 ms | 0 |
+| `/` | Desktop | **100** | **100** | **100** | **100** | 0.2 s | 0.2 s | 20 ms | 0.002 |
+| `/plan` | Mobile | **100** | **100** | **100** | **100** | 0.8 s | 0.8 s | 0 ms | 0 |
+| `/plan` | Desktop | **100** | **100** | **100** | **100** | 0.2 s | 0.2 s | 0 ms | 0 |
 
-| Page | Device | Performance | Accessibility | Best practices | SEO | FCP | LCP | TBT | CLS | Weight |
-|---|---|---|---|---|---|---|---|---|---|---|
-| `/` | Mobile | **100** | **100** | **100** | **100** | 0.9 s | 0.9 s | 0 ms | 0 | 242 KiB |
-| `/` | Desktop | **100** | **100** | **100** | **100** | 0.4 s | 0.4 s | 0 ms | 0 | 242 KiB |
-| `/plan` | Mobile | **100** | **100** | **100** | **100** | 1.0 s | 1.0 s | 0 ms | 0 | 245 KiB |
-| `/plan` | Desktop | **100** | **100** | **100** | **100** | 0.4 s | 0.4 s | 0 ms | 0 | 245 KiB |
+Agentic Browsing passes 2/2 on every run. Mobile runs use Lighthouse's emulated Moto G Power on
+slow 4G. Reports:
+[landing](https://pagespeed.web.dev/analysis/https-aegis-ai-6617-onrender-com/tjomqwlk8l) ·
+[planner](https://pagespeed.web.dev/analysis/https-aegis-ai-6617-onrender-com-plan/l6buq8111g).
+
+The first audit of the rebuilt site found **CLS 0.063 on the desktop landing page**: with live
+data the geocoded place name and the full model name wrapped to more lines than the loading
+state, so the instrument grew 27 px. Reserving that space fixed it (0.063 → 0.002, and
+Performance 98 → 100).
 
 ### What keeps it fast
 - **Prerendered pages.** Both pages are rendered to HTML at build time, so the headline, form and

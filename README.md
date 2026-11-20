@@ -1,47 +1,61 @@
-# AEGIS – Urban Air Quality Assistant
+# Aegis – Urban Air Quality Assistant
 
-[![CI](https://github.com/Cholan-kinnera/aegis-ai/actions/workflows/ci.yml/badge.svg)](https://github.com/Cholan-kinnera/aegis-ai/actions/workflows/ci.yml)
-[![CodeQL](https://github.com/Cholan-kinnera/aegis-ai/actions/workflows/codeql.yml/badge.svg)](https://github.com/Cholan-kinnera/aegis-ai/actions/workflows/codeql.yml)
+[![CI](https://github.com/Reshma-04sk/Aegis-ai/actions/workflows/ci.yml/badge.svg)](https://github.com/Reshma-04sk/Aegis-ai/actions/workflows/ci.yml)
+[![CodeQL](https://github.com/Reshma-04sk/Aegis-ai/actions/workflows/codeql.yml/badge.svg)](https://github.com/Reshma-04sk/Aegis-ai/actions/workflows/codeql.yml)
 
 **Live:** https://aegis-ai-6617.onrender.com · **Planner:** https://aegis-ai-6617.onrender.com/plan
+· **Challenge:** PromptWars Virtual, Challenge 6, *Urban Air Quality Assistant*
 
-> One AQI number tells nobody what to do. **AEGIS plans a household's day around the smog:**
-> who in the family should go out and when, how to keep the air at home clean, and what a greener
+> One AQI number tells nobody what to do. **Aegis plans a household's day around the smog:** who
+> in the family should go out and when, how to keep the air at home clean, and what a greener
 > commute changes, with every number's source and age shown.
 
-**Challenge:** PromptWars Virtual – Challenge 6, *Urban Air Quality Assistant*.
+![The Aegis landing page: a night sky tinted by Delhi's air, the live AQI ring reading 217, Very Unhealthy, with its data age, and the next 24 hours as bars with the cleanest two hours bracketed](docs/images/landing-desktop.jpg)
 
-## At a glance
+The live site runs on Render's free tier: after a quiet spell the first request can take about
+50 seconds while the service wakes; after that pages load in well under a second.
 
-| Criterion | Evidence | Headline |
-|---|---|---|
-| Problem alignment | [PROBLEM_ALIGNMENT.md](PROBLEM_ALIGNMENT.md) | 16 requirements traced to code and tests |
-| Code quality | [CODE_QUALITY.md](CODE_QUALITY.md) | Typed on both sides (mypy strict; TypeScript strict with type-aware ESLint), complexity ≤ 6, docstrings enforced |
-| Security | [SECURITY.md](SECURITY.md) | Strict CSP with Trusted Types, prompt-injection-proof decisions, CodeQL |
-| Efficiency | [EFFICIENCY.md](EFFICIENCY.md) | Prerendered pages, ~75 KB gzipped of shared script, animation code loaded only when motion is on; CLS ≤ 0.002 measured |
-| Testing | [TESTING.md](TESTING.md) | 375 backend tests at **100% coverage** (incl. property-based, API fuzzing and code-convention checks), 48 front-end unit tests at 96% coverage, 32 browser tests, OWASP ZAP scan |
-| Accessibility | [ACCESSIBILITY.md](ACCESSIBILITY.md) | WCAG 2.1 AA: zero axe violations at 1440 px and 375 px |
+## Try it in one minute
+1. Open the [live site](https://aegis-ai-6617.onrender.com). Delhi's air loads into the ring:
+   the US AQI, its EPA category as text and icon, and how old the estimate is.
+2. Switch city (Mumbai, Kolkata, Bengaluru, Chennai). The sky's glow and the haze change with
+   the air. Drag across the 24-hour strip, or focus the slider and use the arrow keys, to read
+   any hour in words.
+3. Press **Plan a day in Delhi**. Tick **Asthma / lung**, add a person or an evening walk, and
+   press **Plan my day**. Each person gets a call, each outing gets its cleanest hours with the
+   PM2.5 saved by waiting, and the briefing is rewritten by Gemini without changing a number.
+4. Open **Home and purifier** and **Daily commute** for purifier sizing and the commute table,
+   where climate impact (kg CO2e per week) and your own exposure (µg PM2.5 per trip) sit in
+   separate columns.
 
-Design decisions: [docs/adr](docs/adr) (rules decide and AI explains; forecast and measurement
-stay separate; a prerendered React front end; CSP with Trusted Types).
-
-## Who it is for
-Families in smog-affected cities, especially households with someone sensitive: asthma or a lung
-condition, children, older adults, pregnancy or a heart condition. One person's details are enough;
-up to eight members can be added, and the household gets the strictest member's verdict.
+<p>
+<img src="docs/images/planner-desktop.jpg" alt="The planner: the household form beside a plan for Delhi with the AQI ring at 217, the household verdict Stay indoors, the model estimate's age and each pollutant" width="68%">
+<img src="docs/images/landing-phone.jpg" alt="The live instrument on a phone: Delhi at US AQI 217, Very Unhealthy, with the model estimate's age" width="28%">
+</p>
 
 ## What it does
-| Problem-statement need | How AEGIS answers it |
+| Need from the problem statement | How Aegis answers it |
 |---|---|
-| Health guidance for sensitive groups | A verdict per member (**Go / Take care / Limit / Stay indoors**) from the EPA AQI category descriptions; sensitive groups are treated one category stricter, and hard exercise one step stricter again. |
-| Low-emission daily routine | Each planned activity is placed in its cleanest forecast hours within the member's own time limits, and the impact of that choice is shown as PM2.5 breathed in during the chosen slot versus going now (EPA inhalation rates for the activity's intensity). If the air is bad all day, the app says so and suggests doing it indoors. |
-| Indoor air | Purifier sizing (EPA chart), clean-air changes per hour, time to cut particles by 90%, the best hour to air the home, and smog-season habits. |
-| Greener commute | kg CO2e per week for each travel mode (UK DESNZ 2026 factors), **kept separate from** the PM2.5 you breathe in per trip (EPA Exposure Factors Handbook). On a smoggy day cycling cuts emissions but raises your exposure, and the app shows both. |
-| Personal, plain-language briefing | Google Gemini (`gemini-3.5-flash-lite`) writes a short briefing from the computed plan. The page shows a rule-based briefing at once and replaces it when Gemini answers. |
+| Health guidance for sensitive groups | A verdict per member (**Go / Take care / Limit / Stay indoors**) from the EPA AQI category descriptions. Sensitive groups are treated one category stricter, hard exercise one step stricter again, and the household follows its strictest member. |
+| A low-exposure daily routine | Each planned activity is placed in its cleanest forecast hours within its own time limits. The benefit is shown as PM2.5 breathed in during the chosen slot versus going now (EPA inhalation rates for the activity). If the air is bad all day, Aegis says so and suggests doing it indoors. |
+| Cleaner air indoors | Purifier sizing (EPA chart), clean-air changes per hour, time to cut particles by 90%, the best hour to air the home, and smog-season habits. |
+| A greener commute, honestly | kg CO2e per week for each travel mode (UK DESNZ 2026 factors), **kept separate from** the PM2.5 you breathe per trip (EPA Exposure Factors Handbook). On a smoggy day cycling cuts emissions but raises exposure, and both are shown. |
+| A personal, plain-language briefing | Google Gemini (`gemini-3.5-flash-lite`) rewrites the computed plan in plain words. A rule-based briefing shows at once and is replaced when Gemini answers. |
+
+## Evidence
+| Criterion | Measured | Details |
+|---|---|---|
+| Efficiency | Lighthouse (PageSpeed Insights, live site): Performance **99** mobile and **100** desktop on `/`, **100** on both for `/plan`; LCP 0.8 s mobile, 0.2 s desktop; TBT 0–20 ms; CLS ≤ 0.002 | [EFFICIENCY.md](EFFICIENCY.md) |
+| Accessibility | Lighthouse **100** on all four runs; zero axe WCAG 2.1 AA violations at 1440 px and 375 px | [ACCESSIBILITY.md](ACCESSIBILITY.md) |
+| Testing | 375 backend tests at **100%** coverage (incl. property-based, API fuzzing and code-convention checks), 48 front-end tests at 96%, 32 browser tests, OWASP ZAP scan | [TESTING.md](TESTING.md) |
+| Code quality | mypy strict and TypeScript strict with type-aware ESLint; complexity ≤ 6; small modules, enforced in CI | [CODE_QUALITY.md](CODE_QUALITY.md) |
+| Security | Strict CSP with Trusted Types, Lighthouse Best Practices **100**, decisions immune to prompt injection, CodeQL, dependency audits | [SECURITY.md](SECURITY.md) |
+| Problem alignment | 16 requirements traced to code and tests; SEO **100** | [PROBLEM_ALIGNMENT.md](PROBLEM_ALIGNMENT.md) |
+
+Design decisions are recorded in [docs/adr](docs/adr): rules decide and AI explains; forecast
+and measurement stay separate; a prerendered React front end; CSP with Trusted Types.
 
 ## How it works
-Full request/response reference: [docs/api.md](docs/api.md).
-
 ```
 Browser ──▶ POST /api/plan ──▶ Open-Meteo geocoding + CAMS air quality + weather (TTL cache)
                            ──▶ OpenAQ nearest station, latest measurements (TTL cache, optional)
@@ -49,159 +63,143 @@ Browser ──▶ POST /api/plan ──▶ Open-Meteo geocoding + CAMS air quali
                            ◀── plan + rule-based briefing + one-time briefing_id
         ──▶ POST /api/briefing/{id} ──▶ Gemini rewrites the briefing (never the numbers)
 ```
+Request and response reference: [docs/api.md](docs/api.md).
+
+| Layer | Stack |
+|---|---|
+| API | Python 3.14, FastAPI (async), Pydantic v2 as the contract, httpx with bounded retries, in-memory TTL caches |
+| Decisions | Pure Python engines (`rules/`, `planner/`, `indoor.py`, `commute/`, `exposure.py`) with no HTTP or model access |
+| AI | Google Gemini REST API, grounded on computed facts, JSON-only output, rules fallback |
+| Front end | React 19 + TypeScript (strict), built by Vite 8 and **prerendered to HTML**; GSAP + ScrollTrigger loaded on demand |
+| Quality | ruff, mypy `--strict`, pytest + Hypothesis + Schemathesis; ESLint (type-aware), Vitest, Playwright + axe |
+| Delivery | One Docker image (Node build stage, Python-only runtime, non-root), Render; GitHub Actions CI, CodeQL, ZAP |
 
 ## Data honesty
-- Two kinds of data, never mixed:
-  - **Model estimate**: the Copernicus CAMS forecast via Open-Meteo. It covers every location and
+- **Two kinds of data, never mixed:**
+  - **Model estimate:** the Copernicus CAMS forecast via Open-Meteo. It covers every location and
     drives the hourly planning.
-  - **Station observation**: the nearest monitoring station that reported in the last 24 hours,
-    within 25 km, via [OpenAQ](https://openaq.org) (which carries government networks such as
-    India's CPCB). It is shown in its own card with station id, provider, distance, the provider's
-    own units, unconverted, and the provider's attribution. Readings silent for over a day are
-    left out. It never replaces
-    or adjusts a model value.
-- Every value shows its source, observation time, retrieval time and data age. Data older than
-  3 hours is flagged as stale.
+  - **Station observation:** the nearest monitor within 25 km that reported in the last 24
+    hours, via [OpenAQ](https://openaq.org) (which carries government networks such as India's
+    CPCB). It is shown in its own card and tile with station, provider, distance and the
+    provider's own units, and it never replaces or adjusts a model value.
+- Every value shows its kind and data age; anything older than 3 hours is labelled stale.
 - Missing values stay missing; nothing is filled in or invented.
 - Emissions (macro impact) and inhaled dose (personal exposure) are separate fields and labels.
 - No medical claims: guidance points to the person's doctor and local health authority.
 
 ## Design decisions
-- **The LLM never decides.** Verdicts, schedules and numbers are deterministic and unit-tested.
-  Gemini only phrases the briefing. Its output must be JSON of at most 700 characters with no links,
-  or it is discarded. The user's note is passed as delimited, untrusted data.
-- **Fast first paint.** The plan returns without waiting for Gemini, which can take 5–25 s.
-  Gemini calls have a 25 s overall budget (one retry on 429/5xx inside it) and a global
-  per-minute cap.
-- **One service, no database.** React builds to static files that FastAPI serves, so there is
-  one container and one set of security headers. Household details are kept only in the
-  browser's localStorage and can be removed with "Forget saved household".
+- **The model never decides.** Verdicts, schedules and numbers are deterministic and tested.
+  Gemini only phrases the briefing; its output must be JSON of at most 700 characters with no
+  links, or it is discarded. The user's note is passed as delimited, untrusted data.
+- **Fast first paint.** Both pages are rendered to HTML at build time, and the plan returns
+  without waiting for Gemini (which can take 5–25 s; its calls have a 25 s budget with one
+  retry and a global per-minute cap).
+- **One service, no database.** React builds to static files that FastAPI serves: one
+  container, one set of security headers. Household details stay in the browser's
+  localStorage and can be removed with "Forget saved household".
+- **Motion that never lies.** React renders final values and GSAP only animates *from* a start,
+  so an interrupted animation cannot leave a wrong number on screen. With
+  `prefers-reduced-motion`, no animation code is downloaded at all.
 
-## Security
-- Secrets only in environment variables (`.env.example` holds placeholders; `.env` is ignored).
-- Pydantic validation with `extra="forbid"` and bounds on every field.
-- Per-client rate limit. `X-Forwarded-For` is ignored unless `TRUSTED_PROXY_HOPS` is set, and then
-  only that many hops are trusted, so set it to the real number of proxies in front of the app.
-- CSP without inline scripts or styles, Trusted Types, `nosniff`, `no-referrer`,
-  `frame-ancestors 'none'`, HSTS, `Permissions-Policy`, and `no-store` on API responses. React
-  writes all text as text; there is no `dangerouslySetInnerHTML` anywhere.
-- Structured logs with request IDs; user text and secrets are never logged.
-- The container runs as a non-root user; CI has read-only permissions.
+## Look and feel
+The landing page opens on a night sky whose glow takes the colour of the chosen city's EPA
+category, with a slow haze drawn from the forecast PM2.5 (denser on dirtier days, paused off
+screen). Below it: the live AQI ring, the scrubbable 24-hour strip, "Today in {city}" tiles,
+what a plan settles, how Aegis decides (a line that draws itself through Sense, Decide, Explain
+as you scroll), what the numbers are and are not, and questions. The planner puts the form
+beside the plan on wide screens and stacks them on phones.
 
-## Design
-Two pages: a live landing page at `/` and the planner at `/plan` (`/plan?city=Delhi` prefills the
-city). Both are React components prerendered to HTML at build time, so content paints before any
-script runs; the landing page is then hydrated in place.
-
-**The landing page** opens on a night sky that takes the colour of the chosen city's air:
-- the sky's glow follows today's EPA category, and a slow haze of particles is drawn from the
-  forecast PM2.5 (denser on dirtier days; decorative, paused off screen);
-- the live instrument: an AQI ring on the EPA 0–500 scale with every category band in its own
-  colour, the number at its centre, the category as text and icon, and the estimate's age;
-- the next 24 hours as a strip of bars with the cleanest two hours bracketed and named, and a
-  scrubber (a native range input) that reads out any hour as text, by keyboard or pointer;
-- "Today in {city}": the call for a healthy adult, modelled PM2.5, the best mixing hour, the
-  nearest monitor's measured PM2.5 with distance and age, and the way into the planner;
-- then what a plan settles, how Aegis decides (a line that draws itself through Sense, Decide,
-  Explain as you scroll), what the numbers are and are not, questions, and a closing call to act.
-
-**The planner** puts the form beside the plan on wide screens and stacks them on phones. Result
-cards reuse the ring and the scrubbable strip; the hourly values are also a table.
-
-**Motion** uses GSAP with ScrollTrigger, loaded as a separate chunk only when the visitor has not
-asked for reduced motion. React always renders the final values and GSAP only animates *from* a
-start state, so an interrupted animation can never leave a wrong number on screen. With
-`prefers-reduced-motion`, GSAP is never downloaded and everything appears in its final state.
-
-The palette is warm paper (`#f4f1ea`) and night (`#0b1720`), ink `#14212b`, one pine green for
-actions (`#0e6b5c`) and a mint accent on the night surfaces. Colour is otherwise reserved for the
-air, using the EPA category colours, with darker variants for text on paper and lighter ones on
-night so every label passes AA. Type is Fraunces, a variable serif, for headings and figures, and
-Atkinson Hyperlegible Next, designed for low-vision readers, for reading. There are no
-third-party scripts or font hosts: the fonts are bundled from npm at the exact versions in
-`package-lock.json` and served from our own origin.
-
-| Asset | Package | License |
-|---|---|---|
-| Fraunces, Atkinson Hyperlegible Next (latin, variable) | @fontsource-variable 5.3.0 | SIL Open Font License 1.1 |
-| GSAP and ScrollTrigger | gsap 3.15.1 | GSAP Standard "no charge" license (gsap.com/standard-license) |
+Palette: warm paper `#f4f1ea` and night `#0b1720`, ink `#14212b`, one pine green for actions
+`#0e6b5c`; colour is otherwise reserved for the air, using EPA category colours with darker
+text variants on paper and lighter ones on night so every label passes AA. Type: Fraunces for
+display and figures, Atkinson Hyperlegible Next (designed for low-vision readers) for reading.
+No third-party scripts or font hosts: everything is served from our own origin.
 
 ## Accessibility
-Skip link, landmarks and headings; every control is labelled; fieldsets for grouped choices;
-verdicts and AQI shown as number + text + icon, never colour alone; an `aria-live` results region
-that receives focus; the forecast is also available as a data table; visible focus;
-`prefers-reduced-motion` respected; fully keyboard operable; no horizontal scroll at 375 px.
+Skip link, landmarks and ordered headings; every control labelled; fieldsets for grouped
+choices; AQI and verdicts as number + text + icon, never colour alone; a keyboard-operable hour
+scrubber whose value is spoken as text; a live results region that receives focus; the hourly
+forecast also as a table; visible focus; reduced motion respected; no horizontal scroll at 375 px.
 
-## Code layout
-| Path | Role |
-|---|---|
-| `src/aegis/api/` | App factory, JSON and page routes, middleware, service container, throttle |
-| `src/aegis/airdata/`, `stations/` | Open-Meteo (CAMS) and OpenAQ adapters, their parsers and provider ports |
-| `src/aegis/fetch.py`, `cache.py`, `errors.py` | Bounded-retry JSON GET, TTL cache, typed upstream errors |
-| `src/aegis/rules/`, `planner/`, `indoor.py`, `commute/`, `exposure.py` | Deterministic decisions: verdicts, cleanest windows, dose, CADR, emissions |
-| `src/aegis/advisor/` | Gemini briefing, grounded on plan facts, with a rules fallback |
-| `src/aegis/models/` | Pydantic v2 API contract, split by domain |
-| `src/aegis/frontend.py` | Constants and form choices for the UI, written to `web/src/generated/config.json` by `uv run aegis-config` |
-| `web/src/lib/` | API contract types, config, pure formatting, chart geometry, network calls, motion |
-| `web/src/components/` | Shared pieces: page shell, badges, AQI ring, counted figures, the 24-hour strip |
-| `web/src/landing/` | Landing page: city data hook, hero, instrument, haze, glance tiles, story sections |
-| `web/src/planner/` | Planner: form state (one reducer), device storage, form sections, results and cards |
-| `web/prerender.ts`, `vite.config.ts` | The build: client bundle, server render, and each page filled with its HTML |
+## Run it locally
+Requires Python 3.14 with [uv](https://docs.astral.sh/uv/) and Node 26.
+```bash
+cp .env.example .env      # then add your keys (see Configuration); both are optional
+uv sync
+npm ci && npm run build   # builds and prerenders the front end into src/aegis/static
+uv run --env-file .env uvicorn aegis.main:app --reload
+# open http://localhost:8000
+```
+
+## Configuration
+All settings are environment variables; `.env.example` lists them with placeholders. Secrets
+are never committed.
+
+| Variable | Default | Purpose |
+|---|---|---|
+| `GEMINI_API_KEY` | empty | Enables the Gemini briefing; without it the rule-based briefing is shown |
+| `GEMINI_MODEL` | `gemini-3.5-flash-lite` | Gemini model id |
+| `OPENAQ_API_KEY` | empty | Enables nearest-station measurements ([free key](https://explore.openaq.org/register)) |
+| `TRUSTED_PROXY_HOPS` | `0` | Proxies in front of the app whose `X-Forwarded-For` hop is trusted (`1` on Render and Cloud Run) |
+| `RATE_LIMIT_PER_MINUTE` | `30` | Plan and briefing requests per client per minute |
+| `GEMINI_CALLS_PER_MINUTE` | `60` | Global cap on Gemini calls |
+| `CACHE_TTL_SECONDS` | `600` | Forecast cache lifetime |
+| `REQUEST_TIMEOUT_SECONDS` | `8` | Timeout per upstream request |
+
+When the UI's constants change in Python (AQI bands, labels, form choices), regenerate them
+with `npm run config`; a test fails if they drift.
 
 ## Checks
 ```bash
-uv sync
-uv run ruff check . && uv run ruff format --check .
-uv run mypy            # strict
+uv run ruff check . && uv run ruff format --check . && uv run mypy
 npm ci && npm run build   # the page tests serve the built front end
 uv run pytest             # 375 tests incl. property, fuzz and convention tests, 100% coverage
 npm run lint && npm run typecheck && npm run format:check
 npm run test:unit         # 48 Vitest tests with coverage
 npx playwright install chromium
-npx playwright test       # 32 browser tests at 1440px and 375px, incl. axe WCAG 2.1 AA scans
+npx playwright test       # 32 browser tests at 1440 px and 375 px, incl. axe WCAG 2.1 AA
 ```
 The browser tests run the real front end and API against fixed air data
-(`tests/e2e/fixture_app.py`), so they need no network or API key. They check the landing page (live data, the keyboard scrubber, scroll reveals, reduced motion), the whole flow,
-number + text + icon for the AQI, data-age labels, the separate CO2e and inhaled-dose figures,
-alerts for errors, keyboard access, reduced motion, no horizontal scroll, no console or CSP
-errors, and zero axe violations before and after a plan is shown.
-
-CI runs all of the above plus `pip-audit`, `npm audit`, CodeQL and an OWASP ZAP scan on every push. See [SECURITY.md](SECURITY.md) for the threat model.
-
-## Run locally
-```bash
-cp .env.example .env    # optional: GEMINI_API_KEY (else rule-based briefing),
-                        # OPENAQ_API_KEY (else no station card)
-npm ci && npm run build   # build the front end into src/aegis/static
-uv run --env-file .env uvicorn aegis.main:app --reload
-# open http://localhost:8000
-```
+(`tests/e2e/fixture_app.py`), so they need no network or keys. CI runs all of the above plus
+`pip-audit`, `npm audit`, CodeQL and an OWASP ZAP scan on every push.
 
 ## Deploy
-**Render (free):** New → Blueprint → pick this repo. `render.yaml` defines the service; paste
-`GEMINI_API_KEY` when Render asks for it.
+**Render (free):** New → Blueprint → pick this repo; `render.yaml` defines the service (Docker,
+Singapore, health check `/api/health`). Add `GEMINI_API_KEY` (and optionally `OPENAQ_API_KEY`)
+under the service's Environment.
 
 **Google Cloud Run:**
 ```bash
 gcloud run deploy aegis-ai --source . --region asia-south1 --allow-unauthenticated \
   --set-secrets GEMINI_API_KEY=gemini-api-key:latest --set-env-vars TRUSTED_PROXY_HOPS=1
 ```
-`TRUSTED_PROXY_HOPS=1` matches Cloud Run's single front proxy. Leave it at 0 when nothing sits in
-front of the app.
 
-## Project layout
-```
-src/aegis/  api/ (routes, middleware) · service.py (orchestration) · rules/ (verdicts, advice)
-             planner/ (routine, dose) · indoor.py · commute/ · exposure.py · airdata/ (Open-Meteo)
-             stations/ (OpenAQ) · advisor/ (Gemini + fallback) · profiles.py · security.py
-             models/ · aqi.py · config.py · frontend.py · main.py (ASGI entry) · static/ (built)
-web/         React + TypeScript front end (src/, the two page shells, prerender.ts)
-tests/       pytest suite · tests/web (Vitest) · tests/e2e (Playwright)
-```
+## Code layout
+| Path | Role |
+|---|---|
+| `src/aegis/api/` | App factory, JSON and page routes, middleware (security and cache headers), throttle |
+| `src/aegis/airdata/`, `stations/` | Open-Meteo (CAMS) and OpenAQ adapters, parsers and provider ports |
+| `src/aegis/rules/`, `planner/`, `indoor.py`, `commute/`, `exposure.py` | Deterministic decisions: verdicts, cleanest windows, dose, CADR, emissions |
+| `src/aegis/advisor/` | Gemini briefing, grounded on plan facts, with a rules fallback |
+| `src/aegis/models/` | Pydantic v2 API contract, split by domain |
+| `src/aegis/frontend.py` | UI constants and form choices, written to `web/src/generated/config.json` |
+| `web/src/lib/` | API types, config, formatting, chart geometry, network calls, motion |
+| `web/src/components/`, `landing/`, `planner/` | Shared pieces, the landing page, the planner and its result cards |
+| `web/prerender.ts`, `vite.config.ts` | The build: client bundle, server render, each page filled with its HTML |
+| `tests/`, `tests/web/`, `tests/e2e/` | pytest, Vitest and Playwright suites |
+
+## Credits and licences
+- Data: Copernicus CAMS via [Open-Meteo](https://open-meteo.com) (CC BY 4.0); measurements via
+  [OpenAQ](https://openaq.org), credited to each station's operator.
+- Factors: UK DESNZ 2026 greenhouse-gas conversion factors; US EPA Exposure Factors Handbook;
+  EPA AQI breakpoints and purifier sizing.
+- Fonts: Fraunces and Atkinson Hyperlegible Next via @fontsource-variable 5.3.0 (SIL OFL 1.1).
+- Motion: GSAP 3.15.1 with ScrollTrigger (GSAP Standard "no charge" license).
+- Code: MIT, see [LICENSE](LICENSE).
 
 ## Limits
 - CAMS is a regional forecast model, not a street-level sensor.
 - Emission factors are UK averages; local fleets and power grids differ.
 - Indoor numbers assume a well-mixed, closed room and are estimates, not measurements.
-- The rate limiter and cache live in each process; several instances would need a shared store.
+- The rate limiter and caches live in each process; several instances would need a shared store.
 - Guidance is general and **not medical advice**.

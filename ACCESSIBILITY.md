@@ -7,7 +7,7 @@
 | Check | Where | Result |
 |---|---|---|
 | axe-core (`wcag2a`, `wcag2aa`, `wcag21a`, `wcag21aa`) on every page state: empty form, filled plan, landing page with live data, errors | `tests/e2e/app.spec.mjs`, run at **1440 px and 375 px** | 0 violations |
-| Lighthouse accessibility, live site (previous front end; to re-run after deploying the rebuild) | `/` and `/plan`, mobile and desktop | **100 / 100** on all four runs |
+| Lighthouse accessibility, live site (PageSpeed Insights, 21 Nov 2026) | `/` and `/plan`, mobile and desktop | **100 / 100** on all four runs |
 | Keyboard-only flows (skip link, city buttons, hour scrubber, FAQ, form, in-page links) | e2e and component tests | pass |
 | `prefers-reduced-motion` honoured (no animation code is downloaded or created; ring, numbers, bars and sections appear in their final state) | e2e tests with emulated reduced motion | pass |
 | No horizontal scroll at 375 px | e2e test measures `scrollWidth` | pass |

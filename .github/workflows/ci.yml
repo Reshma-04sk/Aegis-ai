@@ -18,12 +18,16 @@ jobs:
       - uses: actions/setup-node@v7
         with:
           node-version: 26
+          cache: npm
       - run: uv sync --locked
       - run: uv run ruff check .
       - run: uv run ruff format --check .
       - run: uv run mypy
+      - run: npm ci
+      # The page tests serve the built front end, so build it before pytest.
+      - run: npm run build
       - run: uv run pytest
-      - run: node --test tests/js/
+      - run: npm run test:unit
 
   e2e:
     name: Browser tests (axe WCAG 2.1 AA, 1440px + 375px)
@@ -43,7 +47,7 @@ jobs:
       - run: npm run lint
       - run: npm run typecheck
       - run: npm run format:check
-      - run: npm run vendor
+      - run: npm run build
       - run: npx playwright install --with-deps chromium
       - run: npx playwright test
 
@@ -77,7 +81,7 @@ jobs:
           node-version: 26
           cache: npm
       - run: uv sync --locked
-      - run: npm ci --omit=dev --ignore-scripts && npm run vendor
+      - run: npm ci && npm run build
       - name: Start the app (fixed air data, no network or keys)
         run: |
           PYTHONPATH=tests nohup uv run uvicorn --factory fixture_app:app --app-dir tests/e2e \

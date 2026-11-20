@@ -11,4 +11,8 @@ __pycache__
 .coverage
 .playwright-mcp
 node_modules
-src/aegis/static/vendor
+src/aegis/static
+.prerender
+coverage
+test-results
+playwright-report

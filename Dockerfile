@@ -1,10 +1,12 @@
-# Stage 1: the two web fonts come from npm at build time,
-# pinned by package-lock.json, instead of being committed to the repository.
-FROM node:26.13.1-slim AS assets
+# Stage 1: the front end. React and its build tools exist only here; the build writes static
+# files (prerendered pages, hashed assets, fonts) into src/aegis/static.
+FROM node:26.13.1-slim AS web
 WORKDIR /build
 COPY package.json package-lock.json ./
-RUN npm ci --omit=dev --ignore-scripts
-RUN npm run vendor
+RUN npm ci --ignore-scripts
+COPY vite.config.ts tsconfig.json ./
+COPY web ./web
+RUN npm run build
 
 # Stage 2: the app. Python only at runtime.
 FROM python:3.14-slim
@@ -14,7 +16,7 @@ WORKDIR /app
 COPY pyproject.toml uv.lock README.md ./
 RUN uv sync --locked --no-dev --no-install-project
 COPY src ./src
-COPY --from=assets /build/src/aegis/static/vendor ./src/aegis/static/vendor
+COPY --from=web /build/src/aegis/static ./src/aegis/static
 RUN uv sync --locked --no-dev
 RUN useradd --create-home appuser
 USER appuser

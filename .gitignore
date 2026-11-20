@@ -19,8 +19,9 @@ node_modules/
 test-results/
 playwright-report/
 
-# Third-party front-end assets: copied from npm by `npm run vendor` (and by the Docker build)
-src/aegis/static/vendor/
+# Front-end build output: written by `npm run build` (and by the Docker build), never committed
+src/aegis/static/
+.prerender/
 
 # local agent instructions and editor state
 CLAUDE.md

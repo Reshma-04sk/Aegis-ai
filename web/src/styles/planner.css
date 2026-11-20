@@ -1,0 +1,286 @@
+/* Planner: the household form beside its results. */
+@import "./components.css";
+
+.planner {
+  display: grid;
+  grid-template-columns: minmax(0, 27rem) minmax(0, 1fr);
+  align-items: start;
+  gap: clamp(1.5rem, 4vw, 3.5rem);
+  max-width: var(--page);
+  margin: 0 auto;
+  padding: clamp(2rem, 5vw, 4rem) var(--gutter) clamp(3rem, 6vw, 5rem);
+}
+.planner h1 {
+  font-size: var(--step-4);
+  margin-bottom: 1rem;
+}
+
+/* ---------------------------------------------------------------- form */
+#plan-form {
+  display: grid;
+  gap: 1.4rem;
+}
+#plan-form > .help {
+  margin: 0;
+}
+.field label {
+  display: block;
+  margin-bottom: 0.35rem;
+  font-weight: 700;
+}
+input:not([type="checkbox"], [type="range"]),
+select,
+textarea {
+  width: 100%;
+  min-height: 2.75rem;
+  padding: 0.6rem 0.85rem;
+  border: 1.5px solid var(--control);
+  border-radius: 12px;
+  background: #fff;
+  color: var(--ink);
+  font: inherit;
+}
+::placeholder {
+  color: #5c6b75; /* 5.5:1 on white */
+}
+input[aria-invalid="true"] {
+  border-color: var(--avoid);
+}
+.inline {
+  display: flex;
+  gap: 0.5rem;
+}
+.inline > input {
+  flex: 1;
+  min-width: 0;
+}
+.inline > button,
+.inline > select {
+  flex: none;
+  width: auto;
+}
+fieldset {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.group > legend {
+  margin-bottom: 0.6rem;
+  font: 700 var(--step-1) / 1.2 var(--display);
+}
+.group > .help {
+  margin-top: -0.25rem;
+}
+.rows {
+  display: grid;
+  gap: 0.75rem;
+  margin: 0 0 0.75rem;
+  padding: 0;
+  list-style: none;
+}
+.row-card {
+  display: grid;
+  gap: 0.85rem;
+  padding: 1rem;
+  border: 1px solid var(--rule);
+  border-radius: 18px;
+  background: var(--card);
+}
+.plan-row {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.field-wide,
+.plan-row .remove {
+  grid-column: 1 / -1;
+}
+.remove {
+  justify-self: start;
+}
+/* A grid, not a wrapping row: the chips' layout depends on the column width only, so the web
+   font arriving never re-wraps them (no layout shift). */
+.checks {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(9.5rem, 1fr));
+  gap: 0.45rem;
+}
+.checks > legend {
+  grid-column: 1 / -1;
+}
+.checks > legend {
+  float: left; /* lets the legend sit inside the grid like a full-width row */
+  margin-bottom: 0.45rem;
+  font-weight: 700;
+}
+.check {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 2.5rem;
+  padding: 0.35rem 0.85rem;
+  border: 1.5px solid var(--control);
+  border-radius: 999px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.check input {
+  width: 1.05rem;
+  height: 1.05rem;
+  margin: 0;
+  accent-color: var(--accent);
+}
+.check:has(input:checked) {
+  border-color: var(--accent);
+  background: rgba(14, 107, 92, 0.1);
+}
+details.section {
+  padding: 0 1rem;
+  border: 1px solid var(--rule);
+  border-radius: 18px;
+  background: var(--card);
+}
+details.section > summary {
+  padding: 1rem 0;
+}
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+  gap: 0.85rem;
+  padding-bottom: 1rem;
+}
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem 1.5rem;
+}
+
+/* ---------------------------------------------------------------- results */
+#results {
+  min-width: 0;
+  scroll-margin-top: 1rem;
+}
+.empty-state {
+  padding: clamp(1.5rem, 4vw, 2.5rem);
+  border: 2px dashed var(--rule);
+  border-radius: var(--radius);
+}
+.empty-state h2 {
+  font-size: var(--step-2);
+  margin-bottom: 0.75rem;
+}
+.building {
+  padding: 2rem;
+  border-radius: var(--radius);
+  background: linear-gradient(90deg, var(--paper-2), var(--card), var(--paper-2));
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite linear;
+}
+@keyframes shimmer {
+  to {
+    background-position: -200% 0;
+  }
+}
+.plan-cards {
+  display: grid;
+  gap: 1rem;
+}
+.overview-top {
+  display: grid;
+  grid-template-columns: minmax(0, 13.5rem) minmax(0, 1fr);
+  align-items: center;
+  gap: 1.5rem;
+  margin-bottom: 1rem;
+}
+.overview-calls {
+  display: grid;
+  justify-items: start;
+  gap: 0.5rem;
+}
+.overview-calls .label {
+  margin: 0.5rem 0 0;
+  color: var(--muted);
+  font-weight: 700;
+}
+.pollutants {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(8.5rem, 1fr));
+  gap: 0.5rem;
+  margin: 1rem 0;
+}
+.pollutants > div {
+  padding: 0.6rem 0.8rem;
+  border-radius: 12px;
+  background: var(--paper);
+}
+.pollutants dt {
+  color: var(--muted);
+  font-size: 0.88rem;
+}
+.pollutants dd {
+  margin: 0;
+  font-weight: 700;
+}
+.pollutants .dominant {
+  outline: 2px solid var(--accent);
+}
+.members-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+  gap: 0.75rem;
+}
+.member {
+  padding: 1rem 1.1rem;
+  border-left: 6px solid;
+  border-radius: 16px;
+  background: var(--paper);
+}
+.member h3 {
+  margin: 0 0 0.5rem;
+}
+.verdict-edge-go {
+  border-left-color: var(--go);
+}
+.verdict-edge-caution {
+  border-left-color: var(--caution);
+}
+.verdict-edge-limit {
+  border-left-color: var(--limit);
+}
+.verdict-edge-avoid {
+  border-left-color: var(--avoid);
+}
+.reasons {
+  color: var(--muted);
+}
+.slots {
+  padding-left: 1.2rem;
+}
+.slots li {
+  padding: 0.6rem 0;
+  border-bottom: 1px solid var(--rule);
+}
+.slots p {
+  margin: 0.35rem 0 0;
+}
+.schedule .strip {
+  margin: 1.25rem 0;
+}
+.disclaimer {
+  margin: 0.5rem 0 0;
+}
+
+@media (max-width: 60rem) {
+  .planner {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+@media (max-width: 30rem) {
+  .overview-top,
+  .plan-row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .inline {
+    flex-wrap: wrap;
+  }
+}

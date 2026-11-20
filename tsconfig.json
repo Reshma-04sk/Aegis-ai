@@ -1,20 +1,27 @@
 {
-  // Type-checks the no-build front end (plain ES modules with JSDoc) and the browser tests.
-  // Nothing is emitted: the browser runs the same files the checker reads.
+  // Strict type-checking for the React front end, its unit tests and the build scripts.
+  // Vite compiles; tsc only checks (noEmit). Erasable syntax only, so Node can run the
+  // prerender script directly.
   "compilerOptions": {
     "target": "es2023",
     "module": "esnext",
     "moduleResolution": "bundler",
     "lib": ["es2023", "dom", "dom.iterable"],
-    "allowJs": true,
-    "checkJs": true,
+    "jsx": "react-jsx",
+    "types": ["vite/client", "node"],
     "noEmit": true,
     "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "noImplicitOverride": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
-    "skipLibCheck": true,
-    "paths": { "#api": ["./types/api.d.ts"] }
+    "verbatimModuleSyntax": true,
+    "erasableSyntaxOnly": true,
+    "allowImportingTsExtensions": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "skipLibCheck": true
   },
-  "include": ["src/aegis/static/js/**/*.js", "types/**/*.d.ts"]
+  "include": ["web/**/*.ts", "web/**/*.tsx", "tests/web/**/*.ts", "tests/web/**/*.tsx", "vite.config.ts"]
 }

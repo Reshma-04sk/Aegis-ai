@@ -1,5 +1,5 @@
-// API contract for the front end. Mirrors the Pydantic models in src/aegis/models one-to-one;
-// `tsc --checkJs` uses it to type-check every module that reads API data. Nothing is emitted.
+// API contract for the front end. Mirrors the Pydantic models in src/aegis/models one-to-one,
+// so a changed API field fails type-checking wherever the UI reads it.
 
 export type Verdict = "go" | "caution" | "limit" | "avoid";
 export type Group = "asthma" | "child" | "elderly" | "pregnant" | "heart_condition";
@@ -170,7 +170,7 @@ export interface FormValues {
   note: string;
 }
 
-/** One EPA AQI band, as rendered by the server from aqi.CATEGORIES (max is null for the top band). */
+/** One EPA AQI band, from aqi.CATEGORIES (max is null for the top band). */
 export interface Category {
   name: string;
   max: number | null;
@@ -178,11 +178,21 @@ export interface Category {
   icon: string;
 }
 
-/** Constants the server renders into each page (pages.front_end_config); the browser's only copy. */
+/** A form choice: the API value and its short label. */
+export interface Choice {
+  value: string;
+  label: string;
+}
+
+/** Constants generated from Python (aegis.frontend); the browser's only copy. */
 export interface FrontEndConfig {
   categories: Category[];
   pollutantLabels: Record<string, string>;
   staleAfterHours: number;
   stationRadiusKm: number;
   stationRecentHours: number;
+  groups: Choice[];
+  activities: Choice[];
+  durations: string[];
+  modes: Choice[];
 }

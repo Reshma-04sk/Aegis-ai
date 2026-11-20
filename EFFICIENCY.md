@@ -92,7 +92,7 @@ OpenAQ station lookup). A hit is network round trip only, about **95% faster**.
 ## Reproduce
 ```bash
 npm ci && npm run build
-npx lighthouse@13.6.0 https://aegis-ai-5fgm.onrender.com/plan --preset=desktop
-curl -s -o /dev/null -w "%{time_total}\n" -X POST https://aegis-ai-5fgm.onrender.com/api/plan \
+npx lighthouse@13.6.0 https://aegis-ai-6617.onrender.com/plan --preset=desktop
+curl -s -o /dev/null -w "%{time_total}\n" -X POST https://aegis-ai-6617.onrender.com/api/plan \
   -H 'Content-Type: application/json' -d '{"location":"Lucknow"}'
 ```

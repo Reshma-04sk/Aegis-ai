@@ -3,7 +3,7 @@
 [![CI](https://github.com/Cholan-kinnera/aegis-ai/actions/workflows/ci.yml/badge.svg)](https://github.com/Cholan-kinnera/aegis-ai/actions/workflows/ci.yml)
 [![CodeQL](https://github.com/Cholan-kinnera/aegis-ai/actions/workflows/codeql.yml/badge.svg)](https://github.com/Cholan-kinnera/aegis-ai/actions/workflows/codeql.yml)
 
-**Live:** https://aegis-ai-5fgm.onrender.com · **Planner:** https://aegis-ai-5fgm.onrender.com/plan
+**Live:** https://aegis-ai-6617.onrender.com · **Planner:** https://aegis-ai-6617.onrender.com/plan
 
 > One AQI number tells nobody what to do. **AEGIS plans a household's day around the smog:**
 > who in the family should go out and when, how to keep the air at home clean, and what a greener

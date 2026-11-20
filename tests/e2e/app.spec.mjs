@@ -172,7 +172,7 @@ test.describe("landing", () => {
     });
     await page.goto("/");
     await expect(page.getByRole("heading", { level: 1 })).toHaveAccessibleName(
-      /A shield against winter smog/,
+      /Plan your family’s day around winter smog/,
     );
     for (const name of [
       "Right now, city by city",

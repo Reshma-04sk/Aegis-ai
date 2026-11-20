@@ -45,7 +45,7 @@ if that changes.
 | Function size | at most 30 lines (`test_conventions.py`); longest is 29 | at most 30 lines (ESLint `max-lines-per-function`) |
 | Cyclomatic complexity | at most 6 (ruff `C901`) | at most 6 (ESLint `complexity`) |
 | Parameters | at most 5 (ruff `PLR0913`) | at most 3 (ESLint `max-params`) |
-| Branches, statements, nesting | 8 branches, 20 statements, 4 returns (ruff `PLR0912`, `PLR0915`, `PLR0911`) | depth 3 (ESLint `max-depth`) |
+| Branches, statements, returns (JS: nesting) | 8 branches, 20 statements, 4 returns (ruff `PLR0912`, `PLR0915`, `PLR0911`) | depth 3 (ESLint `max-depth`) |
 | Documentation | module docstring on every file (`test_conventions.py`); Google-style docstrings on every public API (ruff `D`) | JSDoc on every exported function (`jsdoc/require-jsdoc`) |
 | Types | `mypy --strict`; untrusted JSON is narrowed field by field at the parse boundary | `tsc --checkJs --strict` against `types/api.d.ts` |
 | No debris | no `print`, no bare `except` (`test_conventions.py`); no commented-out code (ruff `ERA`) | `no-console`, `no-unused-vars`, `noUnusedLocals` |

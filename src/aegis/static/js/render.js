@@ -8,8 +8,6 @@ import { present } from "./cards/present.js";
 import { renderSchedule } from "./cards/schedule.js";
 import { renderStation } from "./cards/station.js";
 
-export { SOURCE_TEXT } from "./cards/briefing.js";
-
 /**
  * Every card the plan has; optional cards are left out rather than rendered empty.
  * @param {import("#api").PlanResponse} d

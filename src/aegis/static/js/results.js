@@ -1,7 +1,8 @@
 // Results region: messages, the rendered plan, and the AI briefing upgrade.
 import { postBriefing } from "./api.js";
 import { byId, el, pick } from "./dom.js";
-import { SOURCE_TEXT, renderPlan } from "./render.js";
+import { SOURCE_TEXT } from "./cards/briefing.js";
+import { renderPlan } from "./render.js";
 
 const results = byId("results");
 
@@ -22,10 +23,13 @@ export function showMessage(text, role = "alert", className = "error") {
  * @param {string} id
  */
 async function upgradeBriefing(id) {
+  // Hold this plan's nodes: a newer plan must never receive an older plan's briefing.
+  const text = pick(results, ".briefing-text");
   const source = pick(results, ".briefing-source");
   const data = await postBriefing(id).catch(() => null);
+  if (!source.isConnected) return;
   const fromGemini = data?.explanation_source === "gemini";
-  if (data && fromGemini) pick(results, ".briefing-text").textContent = data.explanation;
+  if (data && fromGemini) text.textContent = data.explanation;
   source.textContent = SOURCE_TEXT[fromGemini ? "gemini" : "rules"];
 }
 

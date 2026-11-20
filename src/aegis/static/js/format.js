@@ -12,7 +12,7 @@ export const VERDICTS = {
   avoid: { icon: "✖", label: "Stay indoors" },
 };
 
-export const CFM_TO_M3H = 1.69901;
+const CFM_TO_M3H = 1.69901;
 
 /**
  * EPA category for an AQI value, from the server-rendered bands; null when the value is missing.

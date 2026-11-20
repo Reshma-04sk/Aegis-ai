@@ -11,7 +11,7 @@ data (`tests/e2e/fixture_app.py`).
 | Backend unit, integration and API | pytest 9, respx, FastAPI TestClient | **371** | all pass, **100% line coverage** (CI fails under 90%) |
 | Property-based | Hypothesis | 10 properties × 300 generated cases | all hold (included in the 371) |
 | API fuzzing | Schemathesis, from the OpenAPI schema | 3 endpoints × 150 generated requests | no 5xx, no undocumented status, no schema drift, invalid input always rejected (included in the 371) |
-| Dynamic security scan | OWASP ZAP baseline against the running app | ~50 passive checks | 0 failures, 66 passes; 4 reviewed warnings recorded with reasons in `.zap/rules.tsv`; its COEP finding was fixed |
+| Dynamic security scan | OWASP ZAP baseline against the running app | 70 passive rules | 0 failures, 66 passes; 4 reviewed warnings recorded with reasons in `.zap/rules.tsv`; its COEP finding was fixed |
 | Front-end helpers | `node:test` | **6** | all pass |
 | End-to-end in a real browser | Playwright (Chromium) + axe-core | **34** (17 scenarios × desktop 1440 px and mobile 375 px) | all pass, zero WCAG 2.1 AA violations |
 | Static checks | ruff, mypy `--strict`, ESLint 10, tsc `--checkJs` strict, Prettier | n/a | zero findings |

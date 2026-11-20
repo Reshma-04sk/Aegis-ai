@@ -1,9 +1,26 @@
 # Efficiency
 
-All figures below were measured on the **live deployment** (Render free tier, Singapore),
-from a client in India, on 20 Nov 2026.
+Server figures were measured on the **live deployment** (Render free tier, Singapore), from a
+client in India, on 20 Nov 2026. Front-end figures are from the local production build.
 
-## Lighthouse 13.6 (live site)
+## Front end after the React rebuild (local build, measured)
+
+| Asset (gzipped) | Landing `/` | Planner `/plan` | Notes |
+|---|---|---|---|
+| Shared script (React, React DOM, shared code) | 73.4 KB | 73.4 KB | cached once for both pages |
+| Page script | 5.4 KB | 7.8 KB | |
+| CSS | 2.2 + 3.3 KB | 2.2 + 2.6 KB | |
+| Fonts (woff2, latin, variable) | 70.6 KB | 70.6 KB | display face preloaded |
+| GSAP + ScrollTrigger (lazy chunks) | 27.3 + 17.4 KB | 27.3 + 17.4 KB | only fetched when motion is allowed; never for reduced motion |
+
+| Measure | Landing 1440 px | Landing 375 px | Planner 1440 px | Planner 375 px |
+|---|---|---|---|---|
+| Cumulative Layout Shift (fresh browser, fixture data) | 0.0019 | 0.0002 | 0 | 0.0004 |
+
+Lighthouse has **not yet been re-run** on the rebuilt front end. The scores below are from the
+previous (no-build) front end on the live site and will be replaced after the next deploy.
+
+## Lighthouse 13.6 (live site, previous front end)
 
 | Page | Device | Performance | Accessibility | Best practices | SEO | FCP | LCP | TBT | CLS | Weight |
 |---|---|---|---|---|---|---|---|---|---|---|
@@ -12,26 +29,24 @@ from a client in India, on 20 Nov 2026.
 | `/plan` | Mobile | **100** | **100** | **100** | **100** | 1.0 s | 1.0 s | 0 ms | 0 | 245 KiB |
 | `/plan` | Desktop | **100** | **100** | **100** | **100** | 0.4 s | 0.4 s | 0 ms | 0 | 245 KiB |
 
-Lighthouse's Agentic Browsing category also scores 100 on all four runs.
-
-### What got it there
-- **Layout shift went from 0.347 to 0.** The first live audit found CLS 0.347 (planner, mobile)
-  and 0.159 (landing, desktop). Fixes:
+### What keeps it fast
+- **Prerendered pages.** Both pages are rendered to HTML at build time, so the headline, form and
+  sections paint before any script runs; the largest content never waits for React.
+- **Layout shift stays near zero.**
   - Metric-matched fallback fonts. Atkinson averages 0.441 em per character, the same as Arial.
     Fraunces at weight 700 averages 115.7% of Liberation Serif Bold (metric-compatible with
     Times New Roman Bold). Measured from the font files with fontTools.
-  - The display font is preloaded and set to `font-display: optional`, so a late arrival never
-    re-wraps a headline.
-  - The planner module runs with `blocking="render"` and `modulepreload`, so saved form rows
-    exist before the first paint.
-  - Browser tests now fail if CLS goes above 0.05.
-- **No build, no framework, no third-party scripts.** Plain ES modules (about 17 KB of app
-  JavaScript in total, gzipped), served same-origin. Motion uses the browser's built-in Web
-  Animations API, so no animation library is downloaded.
-- **Compression.** `GZipMiddleware` for responses over 1 KB. HTML is 10.8 KB raw and 3.7 KB on
-  the wire; CSS is 22.4 KB raw and 6.0 KB; a full plan's JSON is 4.6 KB raw and 1.5 KB.
-- **Caching.** Static files are sent with `Cache-Control: no-cache` plus ETag, so they are
-  revalidated cheaply and a deploy is never served stale. API responses are `no-store`.
+  - The display font is preloaded (a small Vite plugin adds the hashed file) and set to
+    `font-display: optional`, so a late arrival never re-wraps a headline.
+  - Live data fills space reserved for it: the instrument's footer and the AQI number have fixed
+    sizes, and the planner's checkbox chips sit in a fixed grid, so the web font arriving never
+    re-wraps them.
+  - Browser tests fail if CLS goes above 0.05.
+- **Animation code only when wanted.** GSAP and ScrollTrigger are separate chunks loaded after
+  first paint, and never for reduced-motion visitors.
+- **Compression.** `GZipMiddleware` for responses over 1 KB.
+- **Caching.** Hashed build assets are `public, max-age=31536000, immutable`; pages are
+  `no-cache` plus ETag, so a deploy is never served stale. API responses are `no-store`.
 
 ## Server-side caching (live, `curl`)
 
@@ -61,16 +76,22 @@ OpenAQ station lookup). A hit is network round trip only, about **95% faster**.
 | Request size | Pydantic limits: at most 8 members, 6 activities, a 300-character note, 100-character place names |
 
 ## Front-end runtime
-- **One request per city.** The dashboard fetches a city once per page view and keeps it, so
-  switching back is instant; a newer choice cancels the effect of a slower earlier one.
-- **No idle work.** No canvas, no scroll listeners, no backdrop blur. Animations run once per
-  data load and stop.
-- **Compositor-friendly motion.** Animations change only `transform`, `opacity` and the dial's
-  `stroke-dashoffset`; count-ups update one text node per frame for under a second.
-- **Reduced motion** creates no animations at all and makes scrolling instant.
+- **One request per city, briefly.** The landing page reuses a city's plan for five minutes, so
+  switching back is instant, then fetches it again so the shown data age is never frozen; a
+  newer choice always wins over a slower earlier one.
+- **Bounded idle work.** The hero's haze is one canvas of at most 220 particles; it pauses when
+  scrolled out of view, the browser pauses it in background tabs, and with reduced motion it is
+  drawn once and never animated. There are no scroll listeners of our own; ScrollTrigger reveals
+  each section once and stops.
+- **Compositor-friendly motion.** Animations change only `transform`, `opacity` and the ring's
+  `stroke-dashoffset`; count-ups update one text node per frame for under a second, and use
+  wall-clock time so a throttled tab jumps straight to the final value.
+- **Reduced motion** downloads no animation code, creates no animations and makes scrolling
+  instant.
 
 ## Reproduce
 ```bash
+npm ci && npm run build
 npx lighthouse@13.6.0 https://aegis-ai-5fgm.onrender.com/plan --preset=desktop
 curl -s -o /dev/null -w "%{time_total}\n" -X POST https://aegis-ai-5fgm.onrender.com/api/plan \
   -H 'Content-Type: application/json' -d '{"location":"Lucknow"}'

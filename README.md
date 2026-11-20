@@ -16,14 +16,14 @@
 | Criterion | Evidence | Headline |
 |---|---|---|
 | Problem alignment | [PROBLEM_ALIGNMENT.md](PROBLEM_ALIGNMENT.md) | 16 requirements traced to code and tests |
-| Code quality | [CODE_QUALITY.md](CODE_QUALITY.md) | Typed on both sides (mypy strict, tsc strict `--checkJs`), complexity ≤ 10, docstrings enforced |
+| Code quality | [CODE_QUALITY.md](CODE_QUALITY.md) | Typed on both sides (mypy strict; TypeScript strict with type-aware ESLint), complexity ≤ 6, docstrings enforced |
 | Security | [SECURITY.md](SECURITY.md) | Strict CSP with Trusted Types, prompt-injection-proof decisions, CodeQL |
-| Efficiency | [EFFICIENCY.md](EFFICIENCY.md) | Lighthouse **100** for performance, accessibility, best practices and SEO on both pages, mobile and desktop; CLS 0 |
-| Testing | [TESTING.md](TESTING.md) | 371 backend tests at **100% coverage** (incl. property-based, API fuzzing and code-convention checks), 28 browser tests, OWASP ZAP scan |
+| Efficiency | [EFFICIENCY.md](EFFICIENCY.md) | Prerendered pages, ~75 KB gzipped of shared script, animation code loaded only when motion is on; CLS ≤ 0.002 measured |
+| Testing | [TESTING.md](TESTING.md) | 374 backend tests at **100% coverage** (incl. property-based, API fuzzing and code-convention checks), 48 front-end unit tests at 96% coverage, 32 browser tests, OWASP ZAP scan |
 | Accessibility | [ACCESSIBILITY.md](ACCESSIBILITY.md) | WCAG 2.1 AA: zero axe violations at 1440 px and 375 px |
 
 Design decisions: [docs/adr](docs/adr) (rules decide and AI explains; forecast and measurement
-stay separate; no-build typed front end; CSP with Trusted Types).
+stay separate; a prerendered React front end; CSP with Trusted Types).
 
 ## Who it is for
 Families in smog-affected cities, especially households with someone sensitive: asthma or a lung
@@ -73,57 +73,58 @@ Browser ──▶ POST /api/plan ──▶ Open-Meteo geocoding + CAMS air quali
 - **Fast first paint.** The plan returns without waiting for Gemini, which can take 5–25 s.
   Gemini calls have a 25 s overall budget (one retry on 429/5xx inside it) and a global
   per-minute cap.
-- **No build step, no database.** FastAPI serves one static page. Household details are kept only
-  in the browser's localStorage and can be removed with "Forget saved household".
+- **One service, no database.** React builds to static files that FastAPI serves, so there is
+  one container and one set of security headers. Household details are kept only in the
+  browser's localStorage and can be removed with "Forget saved household".
 
 ## Security
 - Secrets only in environment variables (`.env.example` holds placeholders; `.env` is ignored).
 - Pydantic validation with `extra="forbid"` and bounds on every field.
 - Per-client rate limit. `X-Forwarded-For` is ignored unless `TRUSTED_PROXY_HOPS` is set, and then
   only that many hops are trusted, so set it to the real number of proxies in front of the app.
-- CSP without inline scripts, `nosniff`, `no-referrer`, `frame-ancestors 'none'`, HSTS,
-  `Permissions-Policy`, and `no-store` on API responses. The DOM is written only with
-  `textContent`.
+- CSP without inline scripts or styles, Trusted Types, `nosniff`, `no-referrer`,
+  `frame-ancestors 'none'`, HSTS, `Permissions-Policy`, and `no-store` on API responses. React
+  writes all text as text; there is no `dangerouslySetInnerHTML` anywhere.
 - Structured logs with request IDs; user text and secrets are never logged.
 - The container runs as a non-root user; CI has read-only permissions.
 
 ## Design
-Two pages: a live dashboard at `/` and the planner at `/plan` (`/plan?city=Delhi` prefills the city).
+Two pages: a live landing page at `/` and the planner at `/plan` (`/plan?city=Delhi` prefills the
+city). Both are React components prerendered to HTML at build time, so content paints before any
+script runs; the landing page is then hydrated in place.
 
-**The dashboard** shows one city's air as a bento grid of tiles, switched with a city selector:
-- an AQI dial on the EPA 0-500 scale, every category band in its own colour, the value arc sweeping
-  to today's number while the number counts up;
-- the next 24 hours as bars that grow in, with the cleanest two hours bracketed and named;
-- today's call for a healthy adult, its first action and the reasons behind it;
-- modelled PM2.5 and the pollutant driving the AQI;
-- the hour the air layer mixes deepest, when smog spreads out most;
-- the nearest official monitor's measured PM2.5, with its distance and age;
-- a link to plan a day for your own household in that city.
+**The landing page** opens on a night sky that takes the colour of the chosen city's air:
+- the sky's glow follows today's EPA category, and a slow haze of particles is drawn from the
+  forecast PM2.5 (denser on dirtier days; decorative, paused off screen);
+- the live instrument: an AQI ring on the EPA 0–500 scale with every category band in its own
+  colour, the number at its centre, the category as text and icon, and the estimate's age;
+- the next 24 hours as a strip of bars with the cleanest two hours bracketed and named, and a
+  scrubber (a native range input) that reads out any hour as text, by keyboard or pointer;
+- "Today in {city}": the call for a healthy adult, modelled PM2.5, the best mixing hour, the
+  nearest monitor's measured PM2.5 with distance and age, and the way into the planner;
+- then what a plan settles, how Aegis decides (a line that draws itself through Sense, Decide,
+  Explain as you scroll), what the numbers are and are not, questions, and a closing call to act.
 
-Every tile reserves its loaded height, so live data never moves the page, and a shimmer shows
-while a city loads. Below the grid: what a plan covers, how Aegis decides (sense, decide,
-explain), what the numbers are and are not, and questions.
+**The planner** puts the form beside the plan on wide screens and stacks them on phones. Result
+cards reuse the ring and the scrubbable strip; the hourly values are also a table.
 
-**The planner** puts the form beside the plan on wide screens (the form stays in view while you
-read) and stacks them on phones. The overview card carries the same dial; result cards rise in
-turn.
+**Motion** uses GSAP with ScrollTrigger, loaded as a separate chunk only when the visitor has not
+asked for reduced motion. React always renders the final values and GSAP only animates *from* a
+start state, so an interrupted animation can never leave a wrong number on screen. With
+`prefers-reduced-motion`, GSAP is never downloaded and everything appears in its final state.
 
-**Motion** uses the browser's Web Animations API, with no library: the dial sweep, count-ups,
-tiles rising in turn and bars growing, each once per data load. With `prefers-reduced-motion`
-everything appears in its final state and no animation is created.
-
-The palette is white tiles on cool mineral (`#e6edef`), slate ink (`#1b2b3a`), one shield green
-for actions (`#0e6b5c`) and an amber rule for the cleanest window (`#c98a1b`). Colour is otherwise
-reserved for the air itself, using the EPA category colours, darkened for text so every label
-passes AA. Type is Fraunces, a variable serif, for headings and figures, and Atkinson Hyperlegible
-Next, a face designed for low-vision readers, for reading. There are no third-party scripts. The
-two fonts are not committed: `npm run vendor` (and the Docker build) copies them from npm, at the
-exact versions in `package-lock.json`, into `src/aegis/static/vendor`, so they are served from our
-own origin.
+The palette is warm paper (`#f4f1ea`) and night (`#0b1720`), ink `#14212b`, one pine green for
+actions (`#0e6b5c`) and a mint accent on the night surfaces. Colour is otherwise reserved for the
+air, using the EPA category colours, with darker variants for text on paper and lighter ones on
+night so every label passes AA. Type is Fraunces, a variable serif, for headings and figures, and
+Atkinson Hyperlegible Next, designed for low-vision readers, for reading. There are no
+third-party scripts or font hosts: the fonts are bundled from npm at the exact versions in
+`package-lock.json` and served from our own origin.
 
 | Asset | Package | License |
 |---|---|---|
 | Fraunces, Atkinson Hyperlegible Next (latin, variable) | @fontsource-variable 5.3.0 | SIL Open Font License 1.1 |
+| GSAP and ScrollTrigger | gsap 3.15.1 | GSAP Standard "no charge" license (gsap.com/standard-license) |
 
 ## Accessibility
 Skip link, landmarks and headings; every control is labelled; fieldsets for grouped choices;
@@ -140,29 +141,30 @@ that receives focus; the forecast is also available as a data table; visible foc
 | `src/aegis/rules/`, `planner/`, `indoor.py`, `commute/`, `exposure.py` | Deterministic decisions: verdicts, cleanest windows, dose, CADR, emissions |
 | `src/aegis/advisor/` | Gemini briefing, grounded on plan facts, with a rules fallback |
 | `src/aegis/models/` | Pydantic v2 API contract, split by domain |
-| `static/js/format.js` | Pure helpers (unit-tested with `node:test`) |
-| `types/api.d.ts`, `types/globals.d.ts` | API contract types mirroring `models/`; checked by `tsc --checkJs` |
-| `static/js/dom.js` | Safe DOM builders (`textContent` only) shared by both pages |
-| `static/js/app.js`, `api.js`, `results.js`, `cards/` | Planner wiring, network calls, results region, one module per card |
-| `static/js/household.js`, `rows.js`, `storage.js`, `location.js` | Form rows, device storage, place or coordinates |
-| `static/js/dashboard.js`, `tiles/`, `gauge.js`, `motion.js` | Landing dashboard, its tiles, the AQI dial and native animation helpers |
+| `src/aegis/frontend.py` | Constants and form choices for the UI, written to `web/src/generated/config.json` by `uv run aegis-config` |
+| `web/src/lib/` | API contract types, config, pure formatting, chart geometry, network calls, motion |
+| `web/src/components/` | Shared pieces: page shell, badges, AQI ring, counted figures, the 24-hour strip |
+| `web/src/landing/` | Landing page: city data hook, hero, instrument, haze, glance tiles, story sections |
+| `web/src/planner/` | Planner: form state (one reducer), device storage, form sections, results and cards |
+| `web/prerender.ts`, `vite.config.ts` | The build: client bundle, server render, and each page filled with its HTML |
 
 ## Checks
 ```bash
 uv sync
 uv run ruff check . && uv run ruff format --check .
 uv run mypy            # strict
-uv run pytest          # 371 tests incl. property, fuzz and convention tests, 100% coverage
-node --test tests/js/  # front-end helpers
-npm ci && npm run vendor && npm run lint && npm run typecheck && npm run format:check
+npm ci && npm run build   # the page tests serve the built front end
+uv run pytest             # 374 tests incl. property, fuzz and convention tests, 100% coverage
+npm run lint && npm run typecheck && npm run format:check
+npm run test:unit         # 48 Vitest tests with coverage
 npx playwright install chromium
-npx playwright test    # 28 browser tests at 1440px and 375px, incl. axe WCAG 2.1 AA scans
+npx playwright test       # 32 browser tests at 1440px and 375px, incl. axe WCAG 2.1 AA scans
 ```
 The browser tests run the real front end and API against fixed air data
-(`tests/e2e/fixture_app.py`), so they need no network or API key. They check the landing page (focus moves with in-page links, reduced motion), the whole flow,
+(`tests/e2e/fixture_app.py`), so they need no network or API key. They check the landing page (live data, the keyboard scrubber, scroll reveals, reduced motion), the whole flow,
 number + text + icon for the AQI, data-age labels, the separate CO2e and inhaled-dose figures,
-alerts for errors, keyboard access, reduced motion, no horizontal scroll, and zero axe violations
-before and after a plan is shown.
+alerts for errors, keyboard access, reduced motion, no horizontal scroll, no console or CSP
+errors, and zero axe violations before and after a plan is shown.
 
 CI runs all of the above plus `pip-audit`, `npm audit`, CodeQL and an OWASP ZAP scan on every push. See [SECURITY.md](SECURITY.md) for the threat model.
 
@@ -170,7 +172,7 @@ CI runs all of the above plus `pip-audit`, `npm audit`, CodeQL and an OWASP ZAP 
 ```bash
 cp .env.example .env    # optional: GEMINI_API_KEY (else rule-based briefing),
                         # OPENAQ_API_KEY (else no station card)
-npm ci --omit=dev && npm run vendor   # fetch the two fonts from npm
+npm ci && npm run build   # build the front end into src/aegis/static
 uv run --env-file .env uvicorn aegis.main:app --reload
 # open http://localhost:8000
 ```
@@ -192,8 +194,9 @@ front of the app.
 src/aegis/  api/ (routes, middleware) · service.py (orchestration) · rules/ (verdicts, advice)
              planner/ (routine, dose) · indoor.py · commute/ · exposure.py · airdata/ (Open-Meteo)
              stations/ (OpenAQ) · advisor/ (Gemini + fallback) · profiles.py · security.py
-             models/ · aqi.py · config.py · main.py (ASGI entry) · static/ (CSS, JS) · templates/
-tests/       pytest suite + tests/js (node:test)
+             models/ · aqi.py · config.py · frontend.py · main.py (ASGI entry) · static/ (built)
+web/         React + TypeScript front end (src/, the two page shells, prerender.ts)
+tests/       pytest suite · tests/web (Vitest) · tests/e2e (Playwright)
 ```
 
 ## Limits

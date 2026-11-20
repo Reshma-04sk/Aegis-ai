@@ -6,21 +6,21 @@ Every rule on this page fails CI when broken; none relies on review alone.
 ## Layers
 
 ```
-Browser (no build step, ES modules)            FastAPI (src/aegis)
-  app.js        wiring and events               api/          app factory, routes, middleware, services, throttle
-  api.js        the only network calls          service.py    build_plan(): assembles one plan from the engines
-  results.js    results region and briefing     rules/        verdicts, cleanest window, advice registries
-  render.js     card order                      planner/      schedule + personal dose per activity
-  cards/        one result card per module      indoor.py     purifier sizing, airing window
-  location.js   place or coordinates            commute/      emission factors (macro) and comparison
-  rows.js       form row mechanics              exposure.py   inhaled-dose formula (micro), shared
-  household.js  member and activity rows        aqi.py        EPA breakpoints and categories
-  storage.js    this-device persistence         airdata/      Open-Meteo adapter, parser, provider port
-  dom.js        the only DOM builder            stations/     OpenAQ adapter, pure helpers, provider port
-  format.js     pure helpers (unit-tested)      advisor/      Gemini adapter, rules briefing, facts, port
-  dashboard.js  landing tiles (tiles/, gauge.js) models/       Pydantic v2 contract, split by domain
-  motion.js     Web Animations, reduced-motion aware
-  types/api.d.ts  the API contract for tsc      fetch.py, cache.py, errors.py, freshness.py   shared infrastructure
+Browser (React + TypeScript, web/src)          FastAPI (src/aegis)
+  landing.tsx, planner.tsx  page entries        api/          app factory, routes, middleware, services, throttle
+  prerender.tsx  server render for the build    service.py    build_plan(): assembles one plan from the engines
+  lib/api.ts     the only network calls         rules/        verdicts, cleanest window, advice registries
+  lib/format.ts  pure text and request helpers  planner/      schedule + personal dose per activity
+  lib/geometry.ts  ring and bar geometry        indoor.py     purifier sizing, airing window
+  lib/motion.ts  GSAP on demand, reduced-motion  commute/     emission factors (macro) and comparison
+  lib/config.ts  constants generated from Python exposure.py  inhaled-dose formula (micro), shared
+  lib/types.ts   the API contract               aqi.py        EPA breakpoints and categories
+  components/    shell, badges, ring, strip     airdata/      Open-Meteo adapter, parser, provider port
+  landing/       data hook, hero, tiles, story  stations/     OpenAQ adapter, pure helpers, provider port
+  planner/       reducer, storage, form, cards  advisor/      Gemini adapter, rules briefing, facts, port
+                                                models/       Pydantic v2 contract, split by domain
+                                                frontend.py   constants and form choices for the UI
+                                                fetch.py, cache.py, errors.py, freshness.py   shared infrastructure
 ```
 
 Dependencies point inwards. The engines (`rules`, `planner`, `indoor`, `commute`, `exposure`,
@@ -32,7 +32,7 @@ if that changes.
 
 | Principle | How it is applied | Files |
 |---|---|---|
-| Single responsibility | Every module does one job and its opening docstring or comment names it. Fetching, caching, parsing and adapting an upstream are separate files. | [airdata/](src/aegis/airdata/), [stations/](src/aegis/stations/), [api/](src/aegis/api/), [static/js/cards/](src/aegis/static/js/cards/) |
+| Single responsibility | Every module does one job and its opening docstring or comment names it. Fetching, caching, parsing and adapting an upstream are separate files. | [airdata/](src/aegis/airdata/), [stations/](src/aegis/stations/), [api/](src/aegis/api/), [web/src/planner/cards/](web/src/planner/cards/) |
 | Open/closed | Advice is built from ordered registries of small rule functions. A new reason or action is one function plus one registry entry, and `advise_member` does not change. A test runs a rule the registry has never seen. | [rules/advice/reasons.py](src/aegis/rules/advice/reasons.py), [rules/advice/actions.py](src/aegis/rules/advice/actions.py), [test_rules.py](tests/test_rules.py) |
 | Liskov substitution | Production adapters and test fakes honour the same `Protocol`s. The e2e fixture and Schemathesis fuzzing run the real app on fakes. | [airdata/provider.py](src/aegis/airdata/provider.py), [stations/port.py](src/aegis/stations/port.py), [advisor/port.py](src/aegis/advisor/port.py), [e2e/fixture_app.py](tests/e2e/fixture_app.py) |
 | Interface segregation | Each port has exactly one method: `snapshot`, `nearest` or `explain`. Nothing depends on a method it does not call. | the three ports above, [api/services.py](src/aegis/api/services.py) |
@@ -40,26 +40,29 @@ if that changes.
 
 ## Limits, and what enforces them
 
-| Limit | Python | JavaScript |
+| Limit | Python | TypeScript (web/) |
 |---|---|---|
-| Module size | at most 110 lines (`test_conventions.py`); largest is 106 | at most 110 code lines (ESLint `max-lines`) |
-| Function size | at most 30 lines (`test_conventions.py`); longest is 29 | at most 30 lines (ESLint `max-lines-per-function`) |
+| Module size | at most 110 lines (`test_conventions.py`); largest is 106 | logic (`.ts`) at most 110 code lines, components (`.tsx`) at most 150, since Prettier sets JSX one attribute per line (ESLint `max-lines`); largest is 141 |
+| Function size | at most 30 lines (`test_conventions.py`); longest is 29 | logic at most 30 lines, components at most 60 (ESLint `max-lines-per-function`) |
 | Cyclomatic complexity | at most 6 (ruff `C901`) | at most 6 (ESLint `complexity`) |
 | Parameters | at most 5 (ruff `PLR0913`) | at most 3 (ESLint `max-params`) |
 | Branches, statements, returns (JS: nesting) | 8 branches, 20 statements, 4 returns (ruff `PLR0912`, `PLR0915`, `PLR0911`) | depth 3 (ESLint `max-depth`) |
-| Documentation | module docstring on every file (`test_conventions.py`); Google-style docstrings on every public API (ruff `D`) | JSDoc on every exported function (`jsdoc/require-jsdoc`) |
-| Types | `mypy --strict`; untrusted JSON is narrowed field by field at the parse boundary | `tsc --checkJs --strict` against `types/api.d.ts` |
-| No debris | no `print`, no bare `except` (`test_conventions.py`); no commented-out code (ruff `ERA`) | `no-console`, `no-unused-vars`, `noUnusedLocals` |
+| Documentation | module docstring on every file (`test_conventions.py`); Google-style docstrings on every public API (ruff `D`) | an opening comment naming each file's job; a doc comment on every exported function and component |
+| Types | `mypy --strict`; untrusted JSON is narrowed field by field at the parse boundary | `tsc --strict` with `noUncheckedIndexedAccess`; ESLint `strictTypeChecked`; saved device data is narrowed field by field |
+| No debris | no `print`, no bare `except` (`test_conventions.py`); no commented-out code (ruff `ERA`) | `no-console`, `noUnusedLocals`, `noUnusedParameters` |
+| Hooks | n/a | the React Hooks rules, including the compiler rules for refs, purity and state in effects (`eslint-plugin-react-hooks`) |
 
 Ruff runs `E F W I B UP S SIM RUF C4 PT RET C90 PL N D FBT FURB PTH PERF TC ARG BLE DTZ T20 ERA`.
 That includes Bandit security rules (`S`) and a ban on boolean positional flags (`FBT`).
 
 ## One source of truth
 - **Numbers live in Python.** AQI breakpoints, category names, stale threshold and station radius
-  reach the page through `templating.front_end_config()`. The front end never re-declares them.
+  reach the UI through `frontend.front_end_config()`, written to `web/src/generated/config.json`
+  by `uv run aegis-config`. `test_frontend.py` fails if the file drifts; the front end never
+  re-declares them.
 - **The contract is Pydantic.** `models/` defines every request and response with
-  `extra="forbid"`. `types/api.d.ts` mirrors it and `tsc` checks every front-end module
-  against it ([ADR 0003](docs/adr/0003-no-build-front-end-with-type-checking.md)).
+  `extra="forbid"`. `web/src/lib/types.ts` mirrors it and `tsc` checks every component against it
+  ([ADR 0005](docs/adr/0005-prerendered-react-front-end.md)).
 - **Rules decide, AI explains.** The model receives computed facts and returns text only
   ([ADR 0001](docs/adr/0001-rules-decide-ai-explains.md)).
 - **Macro and micro impact never mix.** Emissions are computed in `commute/factors.py`. Personal
@@ -75,13 +78,15 @@ That includes Bandit security rules (`S`) and a ban on boolean positional flags 
   rules briefing.
 
 ## Measured
-- **Python:** 58 modules, 371 tests (unit, Hypothesis property, Schemathesis fuzz,
+- **Python:** 58 modules, 374 tests (unit, Hypothesis property, Schemathesis fuzz,
   conventions), 100% line coverage. ruff and `mypy --strict` are clean.
-- **Front end:** 25 ES modules and no third-party scripts. ESLint, `tsc` and Prettier are clean. 6 `node:test` unit tests.
-- **End to end:** 28 Playwright tests at 1440 px and 375 px, including axe WCAG 2.1 AA.
+- **Front end:** 44 TypeScript modules, no third-party script hosts. ESLint (type-aware strict),
+  `tsc` and Prettier are clean. 48 Vitest tests; 96% statement and 91% branch coverage.
+- **End to end:** 32 Playwright tests at 1440 px and 375 px, including axe WCAG 2.1 AA.
 
 ## Reproduce
 ```bash
+npm ci && npm run build && npm run lint && npm run typecheck && npm run format:check
+npm run test:unit && npm run test:e2e
 uv run ruff check . && uv run ruff format --check . && uv run mypy && uv run pytest
-npm run lint && npm run typecheck && npm run format:check && npm run test:unit && npm run test:e2e
 ```

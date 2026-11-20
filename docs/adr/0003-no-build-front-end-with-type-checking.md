@@ -1,6 +1,6 @@
 # ADR 0003: A no-build front end, still type-checked
 
-**Status:** accepted
+**Status:** superseded by [ADR 0005](0005-prerendered-react-front-end.md)
 
 ## Context
 The UI is two pages with one form and one results view. A framework and bundler would add

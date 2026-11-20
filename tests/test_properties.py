@@ -12,13 +12,14 @@ from datetime import UTC, datetime, timedelta
 from hypothesis import given, settings
 from hypothesis import strategies as st
 
-from aegis.airdata import TTLCache
 from aegis.aqi import CATEGORIES, HAZARDOUS, categorize, category_index
+from aegis.cache import TTLCache
 from aegis.models import HourlyPoint, Verdict
 from aegis.profiles import extract_from_note
 from aegis.rules import STRICTNESS, cleanest_window, strictest, verdict_for
 from aegis.security import RateLimiter
-from aegis.stations import _value, haversine_km
+from aegis.stations.geo import haversine_km
+from aegis.stations.values import measured_value
 
 settings.register_profile("ci", max_examples=300, deadline=None)
 settings.load_profile("ci")
@@ -127,7 +128,7 @@ anything = st.one_of(
 
 @given(anything)
 def test_station_values_are_finite_non_negative_or_missing(raw: object) -> None:
-    value = _value(raw)
+    value = measured_value(raw)
     assert value is None or (math.isfinite(value) and value >= 0)
 
 

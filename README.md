@@ -163,7 +163,7 @@ CI runs all of the above plus `pip-audit`, `npm audit`, CodeQL and an OWASP ZAP 
 cp .env.example .env    # optional: GEMINI_API_KEY (else rule-based briefing),
                         # OPENAQ_API_KEY (else no station card)
 npm ci --omit=dev && npm run vendor   # fetch GSAP, Lenis and fonts from npm
-uv run --env-file .env uvicorn aegis.api:app --reload
+uv run --env-file .env uvicorn aegis.main:app --reload
 # open http://localhost:8000
 ```
 

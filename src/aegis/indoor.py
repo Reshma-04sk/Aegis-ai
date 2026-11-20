@@ -42,37 +42,50 @@ def recommended_cadr_m3h(home: Home) -> float:
     return cfm * M3H_PER_CFM * (home.ceiling_height_m / EPA_CEILING_M)
 
 
+def _purifier(home: Home, volume: float) -> tuple[float | None, int | None, bool | None]:
+    """Clean-air changes per hour, minutes to cut particles 90% and adequacy; None without one."""
+    cadr = home.purifier_cadr_m3h
+    if not cadr:
+        return None, None, None
+    ach = cadr / volume
+    return round(ach, 1), round(math.log(10) / ach * 60), cadr >= recommended_cadr_m3h(home)
+
+
+def _airing_tip(snapshot: AirSnapshot, window: TimeWindow | None, *, polluted: bool) -> list[str]:
+    """When to air the home, or a warning to keep airing short when nothing is cleaner."""
+    if window and not window.starts_now and window.mean_aqi < snapshot.aqi:
+        return [f"Air the home briefly around {window.start[11:16]}, the cleanest hour."]
+    if polluted:
+        return ["Keep airing short today: outdoor air is not forecast to improve much."]
+    return []
+
+
+def _tips(
+    snapshot: AirSnapshot, home: Home, window: TimeWindow | None, verdict: Verdict
+) -> list[str]:
+    """Airing first, then the steps for polluted days, the everyday steps, and sizing."""
+    polluted = verdict in (Verdict.LIMIT, Verdict.AVOID)
+    tips = _airing_tip(snapshot, window, polluted=polluted)
+    tips += (_TIPS_POLLUTED if polluted else []) + _TIPS_ALWAYS
+    recommended = round(recommended_cadr_m3h(home))
+    if home.purifier_cadr_m3h and home.purifier_cadr_m3h < recommended_cadr_m3h(home):
+        tips.append(f"This purifier is undersized for the room; aim for about {recommended} m³/h.")
+    return tips
+
+
 def advise_indoor(snapshot: AirSnapshot, home: Home, outdoor_verdict: Verdict) -> IndoorAdvice:
     """Indoor steps: windows, purifier adequacy and air changes per hour."""
     volume = home.floor_area_m2 * home.ceiling_height_m
-    recommended = recommended_cadr_m3h(home)
-    cadr = home.purifier_cadr_m3h
-    ach = minutes = adequate = None
-    if cadr:
-        ach = round(cadr / volume, 1)
-        minutes = round(math.log(10) / (cadr / volume) * 60)
-        adequate = cadr >= recommended
-
-    window: TimeWindow | None = cleanest_window(snapshot.hourly, 1, 6, 23)
-    polluted = outdoor_verdict in (Verdict.LIMIT, Verdict.AVOID)
-    tips = (_TIPS_POLLUTED if polluted else []) + _TIPS_ALWAYS
-    if window and not window.starts_now and window.mean_aqi < snapshot.aqi:
-        tips.insert(0, f"Air the home briefly around {window.start[11:16]}, the cleanest hour.")
-    elif polluted:
-        tips.insert(0, "Keep airing short today: outdoor air is not forecast to improve much.")
-    if cadr is not None and adequate is False:
-        tips.append(
-            f"This purifier is undersized for the room; aim for about {round(recommended)} m³/h."
-        )
-
+    ach, minutes, adequate = _purifier(home, volume)
+    window = cleanest_window(snapshot.hourly, 1, 6, 23)
     return IndoorAdvice(
         room_volume_m3=round(volume, 1),
-        recommended_cadr_m3h=round(recommended),
-        purifier_cadr_m3h=cadr,
+        recommended_cadr_m3h=round(recommended_cadr_m3h(home)),
+        purifier_cadr_m3h=home.purifier_cadr_m3h,
         clean_air_changes_per_hour=ach,
         minutes_to_cut_particles_90pct=minutes,
         purifier_adequate=adequate,
         airing_window=window,
-        tips=tips,
+        tips=_tips(snapshot, home, window, outdoor_verdict),
         assumptions=ASSUMPTIONS,
     )

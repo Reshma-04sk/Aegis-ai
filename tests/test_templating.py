@@ -5,13 +5,13 @@ import re
 
 from fastapi.testclient import TestClient
 
-from aegis.airdata import STALE_AFTER_MINUTES
 from aegis.api import create_app
 from aegis.aqi import CATEGORIES, POLLUTANT_LABELS
 from aegis.commute import LABELS as MODE_LABELS
 from aegis.config import Settings
+from aegis.freshness import STALE_AFTER_MINUTES
 from aegis.models import Activity, Group, Mode
-from aegis.pages import ACTIVITY_CHOICES, GROUP_CHOICES, front_end_config
+from aegis.templating import ACTIVITY_CHOICES, GROUP_CHOICES, front_end_config
 
 
 def test_every_enum_value_has_a_form_label():

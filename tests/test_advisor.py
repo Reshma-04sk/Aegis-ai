@@ -5,7 +5,10 @@ import pytest
 import respx
 from conftest import make_snapshot
 
-from aegis.advisor import GEMINI_URL, GeminiAdvisor, clean_briefing, plan_facts, rules_briefing
+from aegis.advisor import GeminiAdvisor, rules_briefing
+from aegis.advisor.briefing import clean_briefing
+from aegis.advisor.facts import plan_facts
+from aegis.advisor.gemini import GEMINI_URL
 from aegis.models import Commute, Home, Member, Mode, PlanRequest
 from aegis.service import build_plan
 
@@ -32,6 +35,24 @@ def test_facts_are_name_free_and_complete():
     assert "Asha" not in json.dumps(facts)
     assert facts["household_verdict"] == "avoid" and facts["data_kind"] == "model_estimate"
     assert facts["commute_summary"] and facts["indoor_top_tip"]
+
+
+def test_facts_include_only_fresh_measured_station_values():
+    from datetime import UTC, datetime
+
+    from test_stations import latest, location
+
+    from aegis.stations.observation import build_observation
+
+    rows = latest(3, minutes_ago=600)["results"]  # stale (10 h) PM2.5 and NO2
+    rows.append({"datetime": {"utc": rows[0]["datetime"]["utc"]}, "value": None, "sensorsId": 32})
+    stale = build_observation(location(3, 1.0, 2.0), 2.0, rows, datetime.now(UTC))
+    fresh = build_observation(location(3, 1.0, 2.0), 2.0, latest(3)["results"], datetime.now(UTC))
+    body = PlanRequest(location="Testville")
+    stale_facts = plan_facts(build_plan(make_snapshot(), body, (stale, "ok")))
+    fresh_facts = plan_facts(build_plan(make_snapshot(), body, (fresh, "ok")))
+    assert stale_facts["nearest_station_measured"] == {"distance_km": 2.0, "readings": {}}
+    assert fresh_facts["nearest_station_measured"]["readings"]["pm25"].startswith("98 ")
 
 
 def test_rules_briefing_mentions_window_stale_and_commute():
@@ -107,7 +128,7 @@ async def test_global_budget_caps_model_calls():
 
 @respx.mock
 async def test_overload_is_retried_once_then_succeeds(monkeypatch):
-    monkeypatch.setattr("aegis.advisor.RETRY_BACKOFF_SECONDS", 0)
+    monkeypatch.setattr("aegis.advisor.gemini.RETRY_BACKOFF_SECONDS", 0)
     route = respx.post(URL).mock(side_effect=[httpx.Response(503), gemini_reply("Calm today.")])
     async with httpx.AsyncClient() as http:
         text, source = await GeminiAdvisor("k", "m", http).explain(make_plan(), None)
@@ -118,7 +139,7 @@ async def test_overload_is_retried_once_then_succeeds(monkeypatch):
 @respx.mock
 @pytest.mark.parametrize("status", [429, 500, 503])
 async def test_retry_is_bounded_to_one(monkeypatch, status):
-    monkeypatch.setattr("aegis.advisor.RETRY_BACKOFF_SECONDS", 0)
+    monkeypatch.setattr("aegis.advisor.gemini.RETRY_BACKOFF_SECONDS", 0)
     route = respx.post(URL).mock(return_value=httpx.Response(status))
     async with httpx.AsyncClient() as http:
         _, source = await GeminiAdvisor("k", "m", http).explain(make_plan(), None)
@@ -134,6 +155,6 @@ async def test_client_errors_and_late_failures_are_not_retried(monkeypatch):
         assert (await advisor.explain(make_plan(), None))[1] == "rules"
         assert route.call_count == 1
         route.mock(return_value=httpx.Response(503))
-        monkeypatch.setattr("aegis.advisor.MIN_RETRY_SECONDS", 1_000)
+        monkeypatch.setattr("aegis.advisor.gemini.MIN_RETRY_SECONDS", 1_000)
         assert (await advisor.explain(make_plan(), None))[1] == "rules"
     assert route.call_count == 2

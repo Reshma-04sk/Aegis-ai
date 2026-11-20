@@ -44,3 +44,11 @@ def test_polluted_day_without_improvement():
         make_snapshot(aqi=50, hourly=[50, 200, 210]), Home(floor_area_m2=12), Verdict.AVOID
     )
     assert advice.tips[0].startswith("Keep airing short")
+
+
+def test_clean_day_with_no_better_hour_gives_no_airing_tip():
+    advice = advise_indoor(
+        make_snapshot(aqi=30, hourly=[30, 40, 50]), Home(floor_area_m2=12), Verdict.GO
+    )
+    assert advice.airing_window is not None and advice.airing_window.starts_now
+    assert not any(t.startswith(("Air the home", "Keep airing")) for t in advice.tips)

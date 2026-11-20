@@ -5,9 +5,9 @@ import pytest
 from conftest import make_snapshot
 from fastapi.testclient import TestClient
 
-from aegis.airdata import AirDataError, LocationNotFoundError
-from aegis.api import create_app
+from aegis.api import Overrides, create_app
 from aegis.config import Settings
+from aegis.errors import AirDataError, LocationNotFoundError
 
 
 class FakeAir:
@@ -33,8 +33,7 @@ class FakeAdvisor:
 def client_for(air=None, limit=100, hops=0):
     app = create_app(
         Settings(rate_limit_per_minute=limit, trusted_proxy_hops=hops),
-        air or FakeAir(),
-        FakeAdvisor(),
+        Overrides(air=air or FakeAir(), advisor=FakeAdvisor()),
     )
     return TestClient(app)
 
@@ -222,7 +221,7 @@ def test_default_app_builds_real_providers(monkeypatch):
 
 def test_briefing_is_single_use_and_passes_note():
     advisor = FakeAdvisor()
-    app = create_app(Settings(rate_limit_per_minute=100), FakeAir(), advisor)
+    app = create_app(Settings(rate_limit_per_minute=100), Overrides(air=FakeAir(), advisor=advisor))
     with TestClient(app) as client:
         plan = client.post("/api/plan", json={"location": "Testville", "note": "hello"}).json()
         first = client.post(f"/api/briefing/{plan['briefing_id']}")
@@ -247,11 +246,13 @@ def test_station_observation_is_separate_from_model_estimate():
 
     from test_stations import latest, location
 
-    from aegis.stations import build_observation
+    from aegis.stations.observation import build_observation
 
     obs = build_observation(location(3, 1.0, 2.0), 2.0, latest(3)["results"], datetime.now(UTC))
     stations = FakeStations((obs, "ok"))
-    app = create_app(Settings(), FakeAir(aqi=150), FakeAdvisor(), stations)
+    app = create_app(
+        Settings(), Overrides(air=FakeAir(aqi=150), advisor=FakeAdvisor(), stations=stations)
+    )
     with TestClient(app) as client:
         body = client.post("/api/plan", json={"location": "Testville"}).json()
     assert stations.calls == [(1.0, 2.0)]

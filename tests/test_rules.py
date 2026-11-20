@@ -94,3 +94,29 @@ def test_cleanest_window_crosses_midnight_and_avoids_taken():
 
 def test_cleanest_window_empty():
     assert cleanest_window([HourlyPoint(time="2026-11-19T10:00", us_aqi=None)], 1) is None
+
+
+def test_advice_registry_is_open_for_new_rules():
+    """A rule the registry has never seen runs without changing advise_member."""
+    from aegis.rules.advice import REASON_RULES
+
+    def pollen(ctx):
+        return ["Pollen is high too."] if ctx.verdict is not Verdict.GO else []
+
+    member = Member(name="A", groups=[Group.ASTHMA])
+    advice = advise_member(make_snapshot(aqi=160), member, Activity.WALK, (REASON_RULES, (pollen,)))
+    assert advice.actions == ["Pollen is high too."]
+    assert advice.reasons == advise_member(make_snapshot(aqi=160), member, Activity.WALK).reasons
+
+
+def test_every_registered_rule_returns_a_list_of_sentences():
+    from aegis.rules.advice import ACTION_RULES, REASON_RULES, AdviceContext
+
+    for verdict in Verdict:
+        ctx = AdviceContext(
+            make_snapshot(aqi=160), [Group.CHILD], Activity.RUN, verdict, "ozone", True
+        )
+        for rule in (*REASON_RULES, *ACTION_RULES):
+            lines = rule(ctx)
+            assert isinstance(lines, list)
+            assert all(isinstance(line, str) and line.endswith(".") for line in lines)

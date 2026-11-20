@@ -6,13 +6,14 @@ from typing import TYPE_CHECKING
 from conftest import make_snapshot
 from test_stations import latest, location
 
-from aegis.airdata import LocationNotFoundError
-from aegis.api import create_app
+from aegis.api import Overrides, create_app
 from aegis.config import Settings
-from aegis.stations import StationLookup, build_observation
+from aegis.errors import LocationNotFoundError
+from aegis.stations.observation import build_observation
 
 if TYPE_CHECKING:
     from aegis.models import AirSnapshot
+    from aegis.stations import StationLookup
 
 # A smoggy day that clears in the afternoon, so the planner has a clear cleanest window.
 HOURLY: list[float | None] = [170.0, 172, 175, 168, 160, 150, 140, 120, 95, 80, 70, 65]
@@ -39,5 +40,6 @@ class FixtureStations:
 
 def app():  # type: ignore[no-untyped-def]
     return create_app(
-        Settings(rate_limit_per_minute=1000), FixtureAir(), stations=FixtureStations()
+        Settings(rate_limit_per_minute=1000),
+        Overrides(air=FixtureAir(), stations=FixtureStations()),
     )

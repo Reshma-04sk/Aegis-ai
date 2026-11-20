@@ -5,13 +5,11 @@ import httpx
 import pytest
 import respx
 
-from aegis.stations import (
-    OPENAQ_URL,
-    OpenAQClient,
-    build_observation,
-    haversine_km,
-    pick_station,
-)
+from aegis.stations import OpenAQClient
+from aegis.stations.geo import haversine_km
+from aegis.stations.observation import build_observation
+from aegis.stations.openaq import OPENAQ_URL
+from aegis.stations.select import pick_station
 
 NOW = datetime.now(UTC)
 LOCATIONS = f"{OPENAQ_URL}/locations"
@@ -161,7 +159,7 @@ async def test_station_without_usable_readings_is_none_nearby():
 @respx.mock
 @pytest.mark.parametrize("status", [401, 429, 503])
 async def test_failures_are_unavailable_and_not_cached(monkeypatch, status):
-    monkeypatch.setattr("aegis.airdata.RETRY_BACKOFF_SECONDS", 0)
+    monkeypatch.setattr("aegis.fetch.RETRY_BACKOFF_SECONDS", 0)
     route = respx.get(LOCATIONS).mock(return_value=httpx.Response(status))
     async with httpx.AsyncClient() as http:
         client = OpenAQClient(http, "k", 600)

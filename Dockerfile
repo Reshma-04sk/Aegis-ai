@@ -20,4 +20,4 @@ RUN useradd --create-home appuser
 USER appuser
 ENV PATH=/app/.venv/bin:$PATH PORT=8080
 EXPOSE 8080
-CMD ["sh", "-c", "exec uvicorn aegis.api:app --host 0.0.0.0 --port ${PORT}"]
+CMD ["sh", "-c", "exec uvicorn aegis.main:app --host 0.0.0.0 --port ${PORT}"]

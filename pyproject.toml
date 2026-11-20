@@ -57,12 +57,18 @@ runtime-evaluated-base-classes = ["pydantic.BaseModel"]  # field types are resol
 convention = "google"
 
 [tool.ruff.lint.mccabe]
-max-complexity = 10
+max-complexity = 6
 
 [tool.ruff.lint.pylint]
-max-args = 6
+max-args = 5
+max-branches = 8
+max-statements = 20
+max-returns = 4
+max-nested-blocks = 3
 
 [tool.ruff.lint.per-file-ignores]
+# FastAPI reads route and dependency annotations at runtime, so they cannot be typing-only.
+"src/aegis/api/*" = ["TC001", "TC002"]
 "tests/*" = ["S101", "E501", "PT018", "D", "PLR2004", "ARG", "FBT", "PLR0913", "PLC0415"]
 
 [tool.mypy]

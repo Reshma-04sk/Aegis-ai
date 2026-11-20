@@ -1,6 +1,7 @@
 import pytest
 
-from aegis.commute import FACTORS, compare_commute
+from aegis.commute import compare_commute
+from aegis.commute.factors import FACTORS
 from aegis.models import Commute, Mode
 
 

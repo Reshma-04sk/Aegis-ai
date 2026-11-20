@@ -12,9 +12,9 @@ from typing import Any
 
 from fastapi.templating import Jinja2Templates
 
-from .airdata import STALE_AFTER_MINUTES
 from .aqi import CATEGORIES, HAZARDOUS, POLLUTANT_LABELS
 from .commute import LABELS as MODE_LABELS
+from .freshness import STALE_AFTER_MINUTES
 from .models import Activity, Group
 from .stations import RECENT_MINUTES, SEARCH_RADIUS_M
 

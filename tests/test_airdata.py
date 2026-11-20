@@ -4,17 +4,10 @@ import httpx
 import pytest
 import respx
 
-from aegis.airdata import (
-    AIR_URL,
-    GEOCODE_URL,
-    WEATHER_URL,
-    AirDataError,
-    LocationNotFoundError,
-    OpenMeteoClient,
-    TTLCache,
-    parse_air_response,
-    parse_weather,
-)
+from aegis.airdata import OpenMeteoClient, parse_air_response, parse_weather
+from aegis.airdata.openmeteo import AIR_URL, GEOCODE_URL, WEATHER_URL
+from aegis.cache import TTLCache
+from aegis.errors import AirDataError, LocationNotFoundError
 
 GEO = {
     "results": [
@@ -54,7 +47,7 @@ NOW = datetime(2026, 11, 19, 12, 50, tzinfo=UTC)  # 18:20 IST, 20 minutes after 
 
 
 def test_parse_uses_current_hour_and_keeps_missing_values():
-    snap = parse_air_response(AIR, "Kadapa", 14.48, 78.82, now=NOW)
+    snap = parse_air_response(AIR, ("Kadapa", 14.48, 78.82), now=NOW)
     assert snap.aqi == 120
     assert snap.hourly[0].time == "2026-11-19T18:00" and snap.hourly[0].pm2_5 == 40
     assert snap.sub_indices["pm2_5"] == 120 and snap.sub_indices["pm10"] is None
@@ -63,22 +56,22 @@ def test_parse_uses_current_hour_and_keeps_missing_values():
 
 
 def test_provenance_age_and_staleness():
-    prov = parse_air_response(AIR, "K", 0, 0, now=NOW).provenance
+    prov = parse_air_response(AIR, ("K", 0, 0), now=NOW).provenance
     assert prov.kind == "model_estimate" and prov.data_age_minutes == 20 and not prov.stale
     assert "Open-Meteo" in prov.attribution and prov.retrieved_at == "2026-11-19T12:50:00Z"
-    late = parse_air_response(AIR, "K", 0, 0, now=NOW.replace(hour=15)).provenance
+    late = parse_air_response(AIR, ("K", 0, 0), now=NOW.replace(hour=15)).provenance
     assert late.stale and late.data_age_minutes == 200
 
 
 def test_parse_rejects_missing_current_or_time():
     for bad in ({"current": {}}, {}, {"current": {"us_aqi": 5, "time": "nonsense"}}):
         with pytest.raises(AirDataError):
-            parse_air_response(bad, "x", 0, 0)
+            parse_air_response(bad, ("x", 0, 0))
 
 
 def test_parse_ignores_bool_and_strings():
     data = {"current": {"time": "2026-11-19T10:00", "us_aqi": 10, "pm2_5": True, "pm10": "5"}}
-    snap = parse_air_response(data, "x", 0, 0, now=NOW)
+    snap = parse_air_response(data, ("x", 0, 0), now=NOW)
     assert snap.pollutants["pm2_5"] is None and snap.pollutants["pm10"] is None
     assert snap.weather is None
 
@@ -144,7 +137,7 @@ async def test_upstream_failures_become_air_data_errors(response):
 
 @pytest.fixture(autouse=True)
 def _no_backoff(monkeypatch):
-    monkeypatch.setattr("aegis.airdata.RETRY_BACKOFF_SECONDS", 0)
+    monkeypatch.setattr("aegis.fetch.RETRY_BACKOFF_SECONDS", 0)
 
 
 @respx.mock
@@ -183,7 +176,7 @@ async def test_network_error_mapped():
 
 def test_ttl_cache_expiry_and_bound(monkeypatch):
     now = [0.0]
-    monkeypatch.setattr("aegis.airdata.time.monotonic", lambda: now[0])
+    monkeypatch.setattr("aegis.cache.time.monotonic", lambda: now[0])
     cache = TTLCache[int](ttl_seconds=10, max_entries=2)
     cache.put("a", 1)
     cache.put("b", 2)

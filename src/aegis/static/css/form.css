@@ -1,0 +1,150 @@
+/* Planner form: fields, rows, optional sections and actions. */
+
+form {
+  margin: 0;
+}
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.25rem 1.4rem;
+  margin-bottom: 1rem;
+}
+.card h2 {
+  font-size: 1.45rem;
+  font-stretch: 88%;
+  margin: 0 0 0.85rem;
+}
+.card h3 {
+  margin: 1rem 0 0.3rem;
+  font-size: 1.1rem;
+}
+.field {
+  margin: 0 0 1rem;
+}
+fieldset {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  margin: 0 0 1rem;
+  padding: 0.85rem 1.1rem;
+}
+fieldset.inline {
+  border: 0;
+  padding: 0;
+  margin: 0 0 0.5rem;
+}
+legend {
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 1.1rem;
+  padding: 0 0.35rem;
+}
+fieldset.inline legend {
+  padding: 0;
+  font-family: var(--text);
+  font-weight: 600;
+  font-size: 0.98rem;
+}
+label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 0.3rem;
+}
+.checks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 1.1rem;
+}
+.checks label {
+  font-weight: 400;
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-height: 2.75rem;
+}
+.checks input {
+  width: 1.25rem;
+  height: 1.25rem;
+  accent-color: var(--clear);
+}
+input[type="text"],
+input[type="number"],
+select,
+textarea {
+  width: 100%;
+  min-height: 2.9rem;
+  padding: 0.6rem 0.8rem;
+  font: inherit;
+  color: var(--fg);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+}
+input::placeholder,
+textarea::placeholder {
+  color: #a9b8c5;
+}
+input[aria-invalid="true"] {
+  border: 2px solid var(--avoid);
+}
+.row {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+.row input {
+  flex: 1 1 10rem;
+}
+.row select {
+  flex: 0 0 6.5rem;
+  width: auto;
+}
+.grid {
+  display: grid;
+  gap: 0 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+}
+.stack {
+  list-style: none;
+  margin: 0 0 0.5rem;
+  padding: 0;
+}
+.item {
+  border-bottom: 1px solid var(--border);
+  padding: 0.5rem 0 0.75rem;
+  margin-bottom: 0.5rem;
+}
+.item.grid {
+  align-items: end;
+}
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: center;
+}
+details.section {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0 1.1rem;
+  margin: 0 0 1rem;
+}
+details.section[open] {
+  padding-bottom: 0.5rem;
+}
+summary {
+  cursor: pointer;
+  font-weight: 600;
+  min-height: 2.9rem;
+  display: flex;
+  align-items: center;
+}
+.help {
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+.error {
+  color: var(--avoid);
+  font-weight: 700;
+  margin: 0.25rem 0 0;
+}

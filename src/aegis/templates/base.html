@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en"{% if html_class %} class="{{ html_class }}"{% endif %}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="{{ description }}" />
+    <meta name="theme-color" content="#1c2b3d" />
+    <meta property="og:title" content="{{ title }}" />
+    <meta property="og:description" content="{{ description }}" />
+    <title>{{ title }}</title>
+    <link rel="icon" href="/static/img/icon.svg" type="image/svg+xml" />
+    <link rel="preload" href="/static/vendor/fonts/bricolage-grotesque.woff2" as="font" type="font/woff2" crossorigin />
+    {# Split by concern and linked in cascade order; the same set serves both pages (cached once). #}
+    {% for sheet in ("foundation", "sky", "layout", "sections", "form", "results", "colours", "live", "winter",
+                     "content", "interaction") %}
+    <link rel="stylesheet" href="/static/css/{{ sheet }}.css" />
+    {% endfor %}
+    <!-- Constants shared with the API (AQI categories, labels, limits); data only, never executed. -->
+    <script type="application/json" id="aegis-config">{{ config | tojson }}</script>
+    {% block head %}{% endblock %}
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to main content</a>
+    {% include "partials/sky.html" %}
+    {% include "partials/topbar.html" %}
+    <main id="main" tabindex="-1">{% block content %}{% endblock %}</main>
+    {% include "partials/footer.html" %}
+    {% block templates %}{% endblock %}
+    <script src="/static/vendor/gsap.min.js" defer></script>
+    <script src="/static/vendor/ScrollTrigger.min.js" defer></script>
+    <script src="/static/vendor/lenis.min.js" defer></script>
+    <script type="module" src="/static/js/motion/index.js"></script>
+    {% block scripts %}{% endblock %}
+  </body>
+</html>

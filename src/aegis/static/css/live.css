@@ -1,0 +1,112 @@
+/* Landing "Right now" widget: city chips, live AQI and the 24-hour chart. */
+
+.live-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  justify-content: space-between;
+  gap: 1rem 2rem;
+  margin-bottom: 1.5rem;
+}
+.live-head h2 {
+  margin: 0;
+}
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.chip {
+  min-height: 2.75rem;
+  padding: 0.4rem 1rem;
+  background: transparent;
+  color: var(--mist);
+  border: 1.5px solid rgba(238, 243, 246, 0.4);
+  font-weight: 600;
+}
+.chip:hover {
+  background: rgba(238, 243, 246, 0.1);
+}
+.chip[aria-pressed="true"] {
+  background: var(--mist);
+  color: var(--dusk);
+  border-color: var(--mist);
+}
+.live-body {
+  display: grid;
+  gap: 1.5rem 2.5rem;
+  grid-template-columns: minmax(15rem, 1fr) minmax(0, 1.6fr);
+  align-items: center;
+  min-height: 15rem;
+}
+.live-body > p {
+  grid-column: 1 / -1;
+}
+.live-place {
+  font-weight: 700;
+  margin: 0 0 0.25rem;
+}
+.live-aqi {
+  font-family: var(--display);
+  font-size: clamp(4rem, 9vw, 6.5rem);
+  font-weight: 800;
+  font-stretch: 78%;
+  line-height: 0.9;
+  margin: 0 0 0.6rem;
+  display: flex;
+  flex-direction: column;
+  font-variant-numeric: tabular-nums;
+}
+.live-aqi .unit {
+  font-family: var(--text);
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--muted);
+  margin-top: 0.35rem;
+}
+.live-now .badge {
+  margin-bottom: 0.75rem;
+}
+.live-now .meta {
+  margin: 0.4rem 0;
+}
+.live-now .button {
+  margin-top: 0.9rem;
+}
+.live-chart {
+  margin: 0;
+}
+.live-chart svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+.live-chart text {
+  font-size: 9px;
+  fill: var(--muted);
+}
+.live-chart figcaption {
+  color: var(--muted);
+  font-size: 0.95rem;
+  margin-top: 0.5rem;
+}
+.live-chart .bar {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  transform: scaleY(0);
+  transition: transform 0.7s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.live-body.is-in .bar {
+  transform: scaleY(1);
+}
+.live-chart .window {
+  fill: rgba(238, 243, 246, 0.1);
+  stroke: var(--mist);
+  stroke-width: 1.2;
+  stroke-dasharray: 4 3;
+}
+@media (max-width: 47.99rem) {
+  .live-body {
+    grid-template-columns: 1fr;
+  }
+}

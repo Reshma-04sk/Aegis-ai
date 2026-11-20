@@ -1,0 +1,4 @@
+10027	IGNORE	(Suspicious Comments: matches ordinary words such as "user" and "from" in code comments; no secrets or internal details are present)
+10049	IGNORE	(Storable but Non-Cacheable: deliberate. Pages and assets use Cache-Control no-cache with ETag revalidation so a deploy is never served stale; API responses are no-store)
+10094	IGNORE	(Base64 Disclosure: matches the font preload path /static/vendor/fonts/bricolage-grotesque.woff2, a long run of letters and slashes; it encodes no data)
+90005	IGNORE	(Sec-Fetch-Dest Header is Missing: flags the scanner's own requests, which lack browser fetch-metadata headers; real browsers send them and a server cannot add them)

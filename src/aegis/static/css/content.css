@@ -1,0 +1,112 @@
+/* Landing people, FAQ and closing panels, and the planner page frame. */
+
+.people {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 1.75rem 3rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+@media (max-width: 47.99rem) {
+  .people {
+    grid-template-columns: 1fr;
+  }
+}
+.people li {
+  padding-top: 1rem;
+  border-top: 2px solid rgba(238, 243, 246, 0.25);
+}
+.people h3 {
+  margin-bottom: 0.45rem;
+}
+.people p {
+  margin: 0;
+  color: var(--muted);
+  max-width: var(--measure);
+}
+.faq details {
+  border-top: 1px solid var(--border);
+  margin: 0;
+  padding: 0.35rem 0;
+}
+.faq details:last-child {
+  border-bottom: 1px solid var(--border);
+}
+.faq summary {
+  font-family: var(--display);
+  font-size: 1.2rem;
+  font-stretch: 92%;
+  justify-content: space-between;
+  gap: 1rem;
+  list-style: none;
+}
+.faq summary::-webkit-details-marker {
+  display: none;
+}
+.faq summary::after {
+  content: "+";
+  font-size: 1.6rem;
+  line-height: 1;
+  color: var(--accent);
+  transition: transform 0.2s;
+}
+.faq details[open] summary::after {
+  transform: rotate(45deg);
+}
+.faq details p {
+  color: var(--muted);
+  max-width: 46rem;
+  margin: 0.25rem 0 1rem;
+}
+.closing-panel h2 {
+  font-size: clamp(2.2rem, 5.5vw, 4.25rem);
+  font-stretch: 78%;
+  font-weight: 800;
+  margin-bottom: 0.75rem;
+}
+.closing-panel p {
+  font-size: 1.15rem;
+  max-width: 34rem;
+}
+
+/* ---------------------------------------------------------------- planner page */
+.planner {
+  padding-top: clamp(2rem, 5vw, 3.5rem);
+}
+.planner .glass.has-glow {
+  position: relative;
+  isolation: isolate;
+  overflow: clip;
+}
+.planner .glass.has-glow::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: -1;
+  width: 36rem;
+  height: 36rem;
+  margin: -18rem 0 0 -18rem;
+  border-radius: 50%;
+  pointer-events: none;
+  will-change: transform, opacity;
+  opacity: 0;
+  transition: opacity 0.5s;
+  background: radial-gradient(
+    closest-side,
+    rgba(243, 223, 176, 0.2),
+    rgba(121, 180, 214, 0.08) 50%,
+    transparent
+  );
+  transform: translate3d(var(--mx, 50%), var(--my, 0), 0);
+}
+.planner .glass.is-lit::before {
+  opacity: 1;
+}
+.planner h1 {
+  font-size: clamp(2.2rem, 5vw, 3.6rem);
+  font-stretch: 80%;
+  font-weight: 800;
+  margin-bottom: 1rem;
+}

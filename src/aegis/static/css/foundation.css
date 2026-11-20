@@ -1,0 +1,199 @@
+/* Fonts, metric-matched fallbacks, design tokens, base typography and utilities. */
+
+/* AEGIS — a dusk city under winter smog; content sits on frosted glass over the sky. */
+
+@font-face {
+  font-family: "Bricolage Grotesque";
+  src: url("/static/vendor/fonts/bricolage-grotesque.woff2") format("woff2-variations");
+  font-weight: 200 800;
+  font-stretch: 75% 100%;
+  /* Preloaded in <head>; "optional" means a late arrival never swaps in (so never shifts the
+     large headlines) and is used from cache on the next view. */
+  font-display: optional;
+}
+@font-face {
+  font-family: "Atkinson Hyperlegible Next";
+  src: url("/static/vendor/fonts/atkinson-hyperlegible-next.woff2") format("woff2-variations");
+  font-weight: 200 800;
+  font-display: swap;
+}
+/* Metric-matched fallbacks: until the web fonts arrive, text is set in local Arial (or a
+   metric-compatible equivalent) scaled to the same advance widths and vertical metrics, so the
+   swap does not reflow lines or shift layout (CLS). Values measured from the font files:
+   Atkinson averages 0.441 em per character, the same as Arial; Bricolage at weight 800 and
+   80% width averages 0.386 em, 81% of Arial Bold. */
+@font-face {
+  font-family: "Atkinson Fallback";
+  src: local("Arial"), local("ArialMT"), local("Liberation Sans"), local("Helvetica"), local("Arimo");
+  size-adjust: 100%;
+  ascent-override: 98.4%;
+  descent-override: 31.6%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: "Bricolage Fallback";
+  src:
+    local("Arial Bold"), local("Arial-BoldMT"), local("Liberation Sans Bold"), local("Helvetica Bold"),
+    local("Arimo Bold");
+  size-adjust: 81%;
+  ascent-override: 114.8%;
+  descent-override: 33.3%;
+  line-gap-override: 0%;
+}
+
+:root {
+  color-scheme: dark;
+  /* Palette */
+  --smog: #8a7a68;
+  --dusk: #1c2b3d;
+  --clear: #79b4d6;
+  --leaf: #2e8c69;
+  --mist: #eef3f6;
+  --sun: #f3dfb0;
+  /* Roles */
+  --bg: rgba(8, 18, 30, 0.6);
+  --fg: var(--mist);
+  --muted: #c4d1dc;
+  --card: rgba(255, 255, 255, 0.06);
+  --border: rgba(238, 243, 246, 0.24);
+  --accent: #a9d8f2;
+  --accent-fg: #0f2236;
+  --focus: #ffd27a;
+  --glass: rgba(20, 34, 52, 0.72);
+  --glass-edge: rgba(238, 243, 246, 0.18);
+  --go: #8fe3b0;
+  --caution: #ffd36e;
+  --limit: #ffae7a;
+  --avoid: #ff9b9b;
+  --c-good: #8fe3b0;
+  --c-moderate: #f5d95a;
+  --c-usg: #ffb26b;
+  --c-unhealthy: #ff9b9b;
+  --c-very-unhealthy: #d9b6ff;
+  --c-hazardous: #ffb0b0;
+  --bar-good: #2e9d4a;
+  --bar-moderate: #d4b000;
+  --bar-usg: #f08a24;
+  --bar-unhealthy: #e03131;
+  --bar-very-unhealthy: #8f45c9;
+  --bar-hazardous: #b42525;
+  /* Type: Bricolage for display, Atkinson Hyperlegible Next for reading */
+  --display: "Bricolage Grotesque", "Bricolage Fallback", sans-serif;
+  --text: "Atkinson Hyperlegible Next", "Atkinson Fallback", sans-serif;
+  --radius-lg: 1.5rem;
+  --radius: 0.9rem;
+  --radius-sm: 0.6rem;
+  --measure: 40rem;
+}
+
+* {
+  box-sizing: border-box;
+}
+html {
+  -webkit-text-size-adjust: 100%;
+  scroll-padding-top: 5rem;
+}
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+body {
+  margin: 0;
+  background: var(--dusk);
+  color: var(--fg);
+  font: 1.0625rem/1.65 var(--text);
+  font-optical-sizing: auto;
+}
+h1,
+h2,
+h3 {
+  font-family: var(--display);
+  line-height: 1.08;
+  font-weight: 700;
+  margin: 0;
+}
+p {
+  margin: 0 0 1rem;
+}
+a {
+  color: var(--accent);
+  text-underline-offset: 0.18em;
+}
+:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 3px;
+  border-radius: 0.3rem;
+}
+[tabindex="-1"]:focus {
+  outline: none;
+}
+.skip-link {
+  position: absolute;
+  left: -999px;
+  top: 0.5rem;
+  z-index: 30;
+  background: var(--mist);
+  color: var(--dusk);
+  padding: 0.6rem 1rem;
+  border-radius: var(--radius-sm);
+  font-weight: 700;
+}
+.skip-link:focus {
+  left: 0.5rem;
+}
+
+.site-footer {
+  max-width: 68rem;
+  margin: 0 auto 2rem;
+  padding: 1.25rem clamp(1rem, 4vw, 2rem);
+  color: var(--mist);
+  font-size: 0.92rem;
+  background: rgba(16, 28, 44, 0.78);
+  border-radius: var(--radius);
+}
+.site-footer p:last-child {
+  margin: 0;
+}
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+[hidden] {
+  display: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+  .winter {
+    height: auto;
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+  }
+  .winter-sticky {
+    position: static;
+    min-height: 0;
+  }
+  .phase {
+    opacity: 1;
+  }
+}
+
+/* ---------------------------------------------------------------- headline reveal */
+.reveal-words .word {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: top;
+  padding-bottom: 0.06em;
+  margin-bottom: -0.06em;
+}
+.reveal-words .word > span {
+  display: inline-block;
+}

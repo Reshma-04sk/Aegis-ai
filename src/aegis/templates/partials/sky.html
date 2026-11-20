@@ -1,0 +1,14 @@
+<div class="sky" aria-hidden="true">
+  <div class="sky-layer sky-smog"></div>
+  <div class="sky-layer sky-clear"></div>
+  <div class="sun"></div>
+  <canvas class="particles"></canvas>
+  <svg class="skyline" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMax slice" focusable="false">
+    {% for layer in ("city-far", "city-mid", "city-near", "trees") %}
+    <use class="{{ layer }}" href="/static/img/skyline.svg#{{ layer }}" />
+    {% endfor %}
+  </svg>
+  <div class="haze haze-1"></div>
+  <div class="haze haze-2"></div>
+  <div class="haze haze-3"></div>
+</div>

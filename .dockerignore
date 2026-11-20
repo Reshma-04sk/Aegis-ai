@@ -1,0 +1,14 @@
+.git
+.env
+tests
+docs
+.github
+__pycache__
+.pytest_cache
+.venv
+.mypy_cache
+.ruff_cache
+.coverage
+.playwright-mcp
+node_modules
+src/aegis/static/vendor

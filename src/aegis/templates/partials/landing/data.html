@@ -1,0 +1,21 @@
+<section class="band" id="data" aria-labelledby="data-title">
+  <div class="glass wide">
+    <h2 id="data-title">Forecast and measurement, side by side</h2>
+    <div class="sources">
+      <div>
+        <h3>Forecast</h3>
+        <p>A model estimate from Copernicus CAMS on a regional grid, for the next 24 hours. It
+          covers places with no monitor nearby, so it drives the planning. Always labelled as an
+          estimate.</p>
+      </div>
+      <div>
+        <h3>Measured</h3>
+        <p>The nearest official monitor within {{ config.stationRadiusKm }} km that has reported in the last {{ config.stationRecentHours }} hours, exactly as
+          its operator publishes it, with its distance and age. Shown beside the forecast, never
+          blended into it.</p>
+      </div>
+    </div>
+    <p class="sources-note">Anything older than {{ config.staleAfterHours }} hours is marked stale. Missing readings stay
+      missing.</p>
+  </div>
+</section>

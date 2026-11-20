@@ -1,0 +1,23 @@
+<details class="section">
+  <summary>Home and purifier (optional)</summary>
+  <div class="grid">
+    <div class="field">
+      <label for="area">Main room floor area (m²)</label>
+      <input id="area" type="number" inputmode="decimal" min="4" max="200" step="1" placeholder="e.g. 15" />
+    </div>
+    <div class="field">
+      <label for="ceiling">Ceiling height (m)</label>
+      <input id="ceiling" type="number" inputmode="decimal" min="2" max="5" step="0.1" value="2.7" />
+    </div>
+    <div class="field">
+      <label for="cadr">Purifier CADR (leave blank if none)</label>
+      <div class="row">
+        <input id="cadr" type="number" inputmode="decimal" min="0" max="3000" step="1" placeholder="e.g. 250" />
+        <select id="cadr-unit" aria-label="CADR unit">
+          <option value="m3h">m³/h</option>
+          <option value="cfm">CFM</option>
+        </select>
+      </div>
+    </div>
+  </div>
+</details>

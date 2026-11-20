@@ -1,0 +1,11 @@
+# Prettier formats JavaScript, TypeScript declarations, CSS, JSON and YAML. Python is formatted by
+# ruff. Jinja templates and Markdown are hand-formatted (line length is checked by the tests).
+node_modules/
+.venv/
+src/aegis/static/vendor/
+test-results/
+playwright-report/
+package-lock.json
+*.html
+*.md
+*.py

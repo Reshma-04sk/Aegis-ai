@@ -1,0 +1,97 @@
+/* Landing winter-inversion story: sticky panel, phases and diagram. */
+
+.winter {
+  position: relative;
+  height: 260vh;
+  padding: 0 clamp(1rem, 5vw, 4rem);
+}
+.winter-sticky {
+  position: sticky;
+  top: 5rem;
+  min-height: calc(100vh - 6rem);
+  display: grid;
+  align-items: center;
+}
+.winter-panel {
+  display: grid;
+  gap: 2rem 3rem;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: center;
+  width: 100%;
+}
+.winter h2 {
+  font-size: clamp(1.9rem, 4vw, 3rem);
+  font-stretch: 82%;
+  margin-bottom: 1.25rem;
+  text-wrap: balance;
+}
+.phases {
+  list-style: none;
+  margin: 0 0 1rem;
+  padding: 0;
+  display: grid;
+  gap: 0.9rem;
+}
+.phase {
+  padding-left: 1rem;
+  border-left: 3px solid rgba(238, 243, 246, 0.2);
+  opacity: 0.72;
+  transition:
+    opacity 0.3s,
+    border-color 0.3s;
+}
+.phase.is-active {
+  opacity: 1;
+  border-left-color: var(--sun);
+}
+.phase h3 {
+  font-size: 1.2rem;
+  margin-bottom: 0.2rem;
+}
+.phase p {
+  margin: 0;
+  color: var(--muted);
+}
+.inversion {
+  width: 100%;
+  height: auto;
+  border-radius: var(--radius);
+  background: #2b3644;
+}
+.inv-sky {
+  fill: #79b4d6;
+  opacity: 0.12;
+}
+.inv-sun {
+  fill: var(--sun);
+}
+.inv-smog {
+  fill: #a08c70;
+  opacity: 0.9;
+}
+.inv-lid {
+  stroke: var(--focus);
+  stroke-width: 3;
+  stroke-dasharray: 8 6;
+}
+.inv-label {
+  fill: var(--mist);
+  font: 600 13px var(--text);
+}
+.inv-city {
+  fill: #16222f;
+}
+@media (max-width: 47.99rem) {
+  .winter {
+    height: auto;
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+  }
+  .winter-sticky {
+    position: static;
+    min-height: 0;
+  }
+  .winter-panel {
+    grid-template-columns: 1fr;
+  }
+}

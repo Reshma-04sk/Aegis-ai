@@ -1,0 +1,125 @@
+/* Shared section bands and the landing feature, step and source lists. */
+
+.band {
+  padding: clamp(2rem, 6vw, 5rem) clamp(1rem, 5vw, 4rem);
+}
+.wide {
+  max-width: 68rem;
+  margin: 0 auto;
+  padding: clamp(1.5rem, 4vw, 3rem);
+}
+.band h2 {
+  font-size: clamp(1.9rem, 4vw, 3rem);
+  font-stretch: 82%;
+  margin-bottom: 1.75rem;
+  text-wrap: balance;
+}
+.band h3 {
+  font-size: 1.3rem;
+  font-stretch: 90%;
+  margin-bottom: 0.4rem;
+}
+
+.legend {
+  display: grid;
+  gap: 1.75rem 3rem;
+  grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr));
+  margin: 0;
+}
+.legend dt {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 1.3rem;
+  font-stretch: 90%;
+  margin-bottom: 0.35rem;
+}
+.legend dd {
+  margin: 0;
+  color: var(--muted);
+  max-width: var(--measure);
+}
+.icon {
+  flex: none;
+  width: 2.4rem;
+  height: 2.4rem;
+  padding: 0.35rem;
+  border-radius: 50%;
+  background: rgba(121, 180, 214, 0.18);
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+  counter-reset: step;
+}
+.steps li {
+  counter-increment: step;
+  position: relative;
+  padding-top: 3.25rem;
+}
+.steps li::before {
+  content: counter(step);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 2.4rem;
+  height: 2.4rem;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-family: var(--display);
+  font-weight: 800;
+  color: var(--accent-fg);
+  background: var(--accent);
+}
+.steps li:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  top: 1.2rem;
+  left: 3rem;
+  right: -0.75rem;
+  height: 2px;
+  background: linear-gradient(90deg, var(--accent), transparent);
+}
+.steps p {
+  color: var(--muted);
+  margin: 0;
+}
+
+.sources {
+  display: grid;
+  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+}
+.sources > div {
+  padding: 1.25rem 1.4rem;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--card);
+}
+.sources > div:first-child {
+  border-left: 0.35rem solid var(--smog);
+}
+.sources > div:last-child {
+  border-left: 0.35rem solid var(--leaf);
+}
+.sources p {
+  color: var(--muted);
+  margin: 0;
+}
+.sources-note {
+  margin: 1.5rem 0 0;
+  color: var(--mist);
+}

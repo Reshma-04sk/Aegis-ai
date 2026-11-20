@@ -1,0 +1,27 @@
+.env
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+*.egg-info/
+.venv/
+.env.*
+!.env.example
+.mypy_cache/
+coverage/
+node_modules/
+.next/
+# 3D assets need a verified license before they are committed
+*.glb
+.playwright-mcp/
+test-results/
+playwright-report/
+
+# Third-party front-end assets: copied from npm by `npm run vendor` (and by the Docker build)
+src/aegis/static/vendor/
+
+# local agent instructions and editor state
+CLAUDE.md
+.vscode/

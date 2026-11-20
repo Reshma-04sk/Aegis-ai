@@ -1,0 +1,4 @@
+* text=auto eol=lf
+*.woff2 binary
+*.min.js linguist-vendored -diff
+src/aegis/static/vendor/** linguist-vendored

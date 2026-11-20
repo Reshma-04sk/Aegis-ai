@@ -1,0 +1,51 @@
+<template id="member-tpl">
+  <li class="item">
+    <div class="field">
+      <label data-for="name">Name or role</label>
+      <input data-id="name" type="text" maxlength="40" placeholder="e.g. Grandma" />
+    </div>
+    <fieldset class="inline">
+      <legend>Sensitive to air pollution?</legend>
+      <div class="checks">
+        {% for value, label in groups.items() %}
+        <label><input type="checkbox" value="{{ value }}" /> {{ label }}</label>
+        {% endfor %}
+      </div>
+    </fieldset>
+    <button type="button" class="link remove">Remove</button>
+  </li>
+</template>
+
+<template id="activity-tpl">
+  <li class="item grid">
+    <div class="field">
+      <label data-for="label">Plan</label>
+      <input data-id="label" type="text" maxlength="40" placeholder="e.g. Evening walk" />
+    </div>
+    <div class="field">
+      <label data-for="activity">Activity</label>
+      <select data-id="activity">
+        {% for value, label in activities.items() %}
+        <option value="{{ value }}">{{ label }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="field">
+      <label data-for="duration">Hours</label>
+      <select data-id="duration">
+        {% for hours in durations %}
+        <option value="{{ hours }}"{% if hours == "1" %} selected{% endif %}>{{ hours }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="field">
+      <label data-for="earliest">Not before</label>
+      <select data-id="earliest" class="hour" data-default="6"></select>
+    </div>
+    <div class="field">
+      <label data-for="latest">Done by</label>
+      <select data-id="latest" class="hour" data-default="22"></select>
+    </div>
+    <button type="button" class="link remove">Remove</button>
+  </li>
+</template>

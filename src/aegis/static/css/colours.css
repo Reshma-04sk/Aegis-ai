@@ -1,0 +1,63 @@
+/* AQI category and verdict colours for badges, numbers and chart bars (never colour alone). */
+
+.stale {
+  color: var(--avoid);
+}
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-weight: 700;
+  padding: 0.15rem 0.65rem;
+  border: 2px solid currentColor;
+  border-radius: 999px;
+  font-size: 0.95rem;
+}
+.verdict-go {
+  color: var(--go);
+}
+.verdict-caution {
+  color: var(--caution);
+}
+.verdict-limit {
+  color: var(--limit);
+}
+.verdict-avoid {
+  color: var(--avoid);
+}
+.cat-good {
+  color: var(--c-good);
+}
+.cat-moderate {
+  color: var(--c-moderate);
+}
+.cat-usg {
+  color: var(--c-usg);
+}
+.cat-unhealthy {
+  color: var(--c-unhealthy);
+}
+.cat-very-unhealthy {
+  color: var(--c-very-unhealthy);
+}
+.cat-hazardous {
+  color: var(--c-hazardous);
+}
+.bar.cat-good {
+  fill: var(--bar-good);
+}
+.bar.cat-moderate {
+  fill: var(--bar-moderate);
+}
+.bar.cat-usg {
+  fill: var(--bar-usg);
+}
+.bar.cat-unhealthy {
+  fill: var(--bar-unhealthy);
+}
+.bar.cat-very-unhealthy {
+  fill: var(--bar-very-unhealthy);
+}
+.bar.cat-hazardous {
+  fill: var(--bar-hazardous);
+}

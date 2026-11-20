@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% set title = "Plan your day – AEGIS" %}
+{% set description = "Plan your household’s day around the smog: a verdict for each person, the cleanest "
+  ~ "hours for each plan, indoor air steps and greener trips." %}
+{% set html_class = "sky-is-clear" %}
+{% set nav = [
+  {"href": "/", "text": "Home"},
+  {"href": "/#how", "text": "How it decides"},
+  {"href": "/#faq", "text": "Questions"},
+] %}
+{% block head %}
+    <!-- The planner builds its form rows from saved data before the first paint (blocking="render"),
+         so the form never shifts as rows appear. Imports are preloaded in parallel. -->
+    {% for module in ("config", "format", "dom", "chart", "household", "render") %}
+    <link rel="modulepreload" href="/static/js/{{ module }}.js" />
+    {% endfor %}
+    <script type="module" src="/static/js/app.js" blocking="render"></script>
+{% endblock %}
+{% block content %}
+  <section class="band planner" id="planner" aria-labelledby="planner-title">
+    <div class="glass wide">
+      <h1 id="planner-title" class="reveal-words">Plan your family&#8217;s day</h1>
+      {% include "partials/planner/form.html" %}
+      <section id="results" aria-live="polite" aria-busy="false" tabindex="-1" aria-label="Your plan"></section>
+    </div>
+  </section>
+{% endblock %}
+{% block templates %}
+  {% include "partials/planner/rows.html" %}
+{% endblock %}

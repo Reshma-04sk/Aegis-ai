@@ -1,0 +1,167 @@
+/* Planner results: overview, station, members, schedule, chart, tables. */
+
+#results {
+  margin-top: 1.75rem;
+  outline: none;
+}
+#results:empty {
+  margin: 0;
+}
+.lead {
+  font-size: 1.1rem;
+}
+.overview-top {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  align-items: center;
+}
+.aqi-number {
+  margin: 0;
+  font-family: var(--display);
+  font-size: 4rem;
+  font-weight: 800;
+  font-stretch: 80%;
+  line-height: 1;
+  display: flex;
+  flex-direction: column;
+}
+.aqi-number .unit {
+  font-family: var(--text);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--muted);
+}
+.label {
+  margin: 0.5rem 0 0.15rem;
+  font-size: 0.92rem;
+  color: var(--muted);
+}
+.meta,
+.weather {
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+.pollutants {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(7.75rem, 1fr));
+  gap: 0.6rem;
+  margin: 0.85rem 0;
+}
+.pollutants div {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 0.45rem 0.7rem;
+  background: rgba(8, 18, 30, 0.35);
+}
+.pollutants .dominant {
+  border-width: 2px;
+  border-color: var(--mist);
+}
+.pollutants dt {
+  font-size: 0.88rem;
+  color: var(--muted);
+}
+.pollutants dd {
+  margin: 0;
+  font-weight: 700;
+}
+.pollutants dd.help {
+  font-weight: 400;
+}
+.station {
+  border-left: 0.35rem solid var(--leaf);
+}
+.overview {
+  border-left: 0.35rem solid var(--smog);
+}
+.briefing {
+  border-left: 0.35rem solid var(--accent);
+}
+.members-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+}
+.member {
+  border: 1px solid var(--border);
+  border-left-width: 0.35rem;
+  border-radius: var(--radius-sm);
+  padding: 0.8rem 1rem;
+}
+.member h3 {
+  margin: 0 0 0.35rem;
+}
+.verdict-border-go {
+  border-left-color: var(--go);
+}
+.verdict-border-caution {
+  border-left-color: var(--caution);
+}
+.verdict-border-limit {
+  border-left-color: var(--limit);
+}
+.verdict-border-avoid {
+  border-left-color: var(--avoid);
+}
+.reasons {
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+.schedule {
+  padding-left: 1.25rem;
+}
+.schedule li {
+  margin-bottom: 0.6rem;
+}
+.schedule p {
+  margin: 0.15rem 0 0;
+}
+.chart {
+  margin: 1rem 0 0;
+}
+.chart figcaption {
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+.chart svg {
+  width: 100%;
+  height: auto;
+  max-height: 12rem;
+}
+.chart text {
+  font-size: 8px;
+  fill: var(--muted);
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+caption {
+  text-align: left;
+  color: var(--muted);
+  font-size: 0.92rem;
+  padding-bottom: 0.4rem;
+}
+th,
+td {
+  text-align: left;
+  padding: 0.5rem;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+}
+thead th {
+  font-size: 0.9rem;
+}
+tr.current {
+  background: rgba(121, 180, 214, 0.14);
+}
+.table-scroll {
+  overflow-x: auto;
+}
+details {
+  margin-top: 0.75rem;
+}
+.disclaimer {
+  text-align: center;
+}

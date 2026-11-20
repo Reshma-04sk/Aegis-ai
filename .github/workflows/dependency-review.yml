@@ -1,0 +1,21 @@
+name: Dependency review
+
+# Blocks a pull request that adds a dependency with a known vulnerability (moderate or worse)
+# or a licence that is not permissive.
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/dependency-review-action@v5.0.1
+        with:
+          fail-on-severity: moderate
+          allow-licenses: MIT, Apache-2.0, BSD-2-Clause, BSD-3-Clause, ISC, 0BSD, MPL-2.0, OFL-1.1, PSF-2.0, Python-2.0, BlueOak-1.0.0, Unlicense

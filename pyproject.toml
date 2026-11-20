@@ -64,7 +64,6 @@ max-args = 5
 max-branches = 8
 max-statements = 20
 max-returns = 4
-max-nested-blocks = 3
 
 [tool.ruff.lint.per-file-ignores]
 # FastAPI reads route and dependency annotations at runtime, so they cannot be typing-only.

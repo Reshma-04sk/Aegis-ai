@@ -19,7 +19,7 @@
 | Code quality | [CODE_QUALITY.md](CODE_QUALITY.md) | Typed on both sides (mypy strict, tsc strict `--checkJs`), complexity ≤ 10, docstrings enforced |
 | Security | [SECURITY.md](SECURITY.md) | Strict CSP with Trusted Types, prompt-injection-proof decisions, CodeQL |
 | Efficiency | [EFFICIENCY.md](EFFICIENCY.md) | Lighthouse **100** for performance, accessibility, best practices and SEO on both pages, mobile and desktop; CLS 0 |
-| Testing | [TESTING.md](TESTING.md) | 181 backend tests at **100% coverage** (incl. property-based and API fuzzing), 34 browser tests, OWASP ZAP scan |
+| Testing | [TESTING.md](TESTING.md) | 371 backend tests at **100% coverage** (incl. property-based, API fuzzing and code-convention checks), 34 browser tests, OWASP ZAP scan |
 | Accessibility | [ACCESSIBILITY.md](ACCESSIBILITY.md) | WCAG 2.1 AA: zero axe violations at 1440 px and 375 px |
 
 Design decisions: [docs/adr](docs/adr) (rules decide and AI explains; forecast and measurement
@@ -45,7 +45,7 @@ Full request/response reference: [docs/api.md](docs/api.md).
 ```
 Browser ──▶ POST /api/plan ──▶ Open-Meteo geocoding + CAMS air quality + weather (TTL cache)
                            ──▶ OpenAQ nearest station, latest measurements (TTL cache, optional)
-                           ──▶ rules.py / planner.py / indoor.py / commute.py (deterministic)
+                           ──▶ rules/ · planner/ · indoor.py · commute/ (deterministic)
                            ◀── plan + rule-based briefing + one-time briefing_id
         ──▶ POST /api/briefing/{id} ──▶ Gemini rewrites the briefing (never the numbers)
 ```
@@ -129,22 +129,25 @@ that receives focus; the forecast is also available as a data table; visible foc
 ## Code layout
 | Path | Role |
 |---|---|
-| `src/aegis/api.py` | FastAPI app: router, typed `Services`, throttle dependency, security middleware |
-| `airdata.py`, `stations.py` | Open-Meteo (CAMS) and OpenAQ clients: bounded retries, TTL caches, untrusted-input parsing |
-| `rules.py`, `planner.py`, `indoor.py`, `commute.py` | Deterministic decisions: verdicts, cleanest windows, dose, CADR, emissions |
-| `advisor.py` | Gemini briefing, grounded on plan facts, with a rules fallback |
+| `src/aegis/api/` | App factory, JSON and page routes, middleware, service container, throttle |
+| `src/aegis/airdata/`, `stations/` | Open-Meteo (CAMS) and OpenAQ adapters, their parsers and provider ports |
+| `src/aegis/fetch.py`, `cache.py`, `errors.py` | Bounded-retry JSON GET, TTL cache, typed upstream errors |
+| `src/aegis/rules/`, `planner/`, `indoor.py`, `commute/`, `exposure.py` | Deterministic decisions: verdicts, cleanest windows, dose, CADR, emissions |
+| `src/aegis/advisor/` | Gemini briefing, grounded on plan facts, with a rules fallback |
+| `src/aegis/models/` | Pydantic v2 API contract, split by domain |
 | `static/js/format.js` | Pure helpers (unit-tested with `node:test`) |
-| `static/js/api.d.ts`, `globals.d.ts` | API contract types mirroring `models.py`; checked by `tsc --checkJs` |
+| `types/api.d.ts`, `types/globals.d.ts` | API contract types mirroring `models/`; checked by `tsc --checkJs` |
 | `static/js/dom.js` | Safe DOM builders (`textContent` only) shared by both pages |
-| `static/js/household.js`, `render.js`, `app.js` | Planner form state, result cards, page wiring |
-| `static/js/live.js`, `motion.js`, `cursor.js` | Landing live widget, motion, custom cursor |
+| `static/js/app.js`, `api.js`, `results.js`, `cards/` | Planner wiring, network calls, results region, one module per card |
+| `static/js/household.js`, `rows.js`, `storage.js`, `location.js` | Form rows, device storage, place or coordinates |
+| `static/js/live.js`, `motion/` | Landing live widget and motion |
 
 ## Checks
 ```bash
 uv sync
 uv run ruff check . && uv run ruff format --check .
 uv run mypy            # strict
-uv run pytest          # 181 tests incl. property-based and fuzz tests, 100% coverage
+uv run pytest          # 371 tests incl. property, fuzz and convention tests, 100% coverage
 node --test tests/js/  # front-end helpers
 npm ci && npm run vendor && npm run lint && npm run typecheck && npm run format:check
 npx playwright install chromium
@@ -181,10 +184,10 @@ front of the app.
 
 ## Project layout
 ```
-src/aegis/  api.py (routes) · service.py (orchestration) · rules.py (verdicts)
-             planner.py (routine) · indoor.py · commute.py · airdata.py (Open-Meteo)
-             advisor.py (Gemini + fallback) · profiles.py (note parsing) · security.py
-             models.py · aqi.py · config.py · static/ (HTML, CSS, JS)
+src/aegis/  api/ (routes, middleware) · service.py (orchestration) · rules/ (verdicts, advice)
+             planner/ (routine, dose) · indoor.py · commute/ · exposure.py · airdata/ (Open-Meteo)
+             stations/ (OpenAQ) · advisor/ (Gemini + fallback) · profiles.py · security.py
+             models/ · aqi.py · config.py · main.py (ASGI entry) · static/ (CSS, JS) · templates/
 tests/       pytest suite + tests/js (node:test)
 ```
 

@@ -20,7 +20,7 @@
   screen readers hear the words once (`dom.js` `badge()`).
 - **Charts have a text twin.** The 24-hour bar chart is decorative (`aria-hidden`). The same
   values are in a real `<table>` with a caption and column scopes, inside a "Hourly values"
-  disclosure (`render.js` `hourlyTable()`).
+  disclosure (`cards/hourly.js` `hourlyTable()`).
 - **Contrast.** Text on the glass panels meets AA. Dimmed winter-section phases are kept at 0.72
   opacity so they still pass; a scroll cue that faded to low contrast was changed to disappear
   completely instead.

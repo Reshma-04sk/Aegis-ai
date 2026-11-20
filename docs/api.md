@@ -1,7 +1,7 @@
 # AEGIS API
 
 Base URL: the deployed app root. All bodies are JSON. Pydantic models in
-[`src/aegis/models.py`](../src/aegis/models.py) are the contract: unknown fields are rejected
+[`src/aegis/models/`](../src/aegis/models/) are the contract: unknown fields are rejected
 (`422`), and every number has bounds.
 
 | Method | Path | Purpose |

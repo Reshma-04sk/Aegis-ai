@@ -16,7 +16,7 @@
 }
 .sky-clear {
   opacity: 0;
-  background: linear-gradient(180deg, #123a5e 0%, #2f6f9e 40%, var(--clear) 72%, #cfe6f2 100%);
+  background: linear-gradient(180deg, #0e3a34 0%, #1f6e62 40%, var(--clear) 72%, #d2efe5 100%);
 }
 .sun {
   position: absolute;

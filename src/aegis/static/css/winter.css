@@ -59,7 +59,7 @@
   background: #2b3644;
 }
 .inv-sky {
-  fill: #79b4d6;
+  fill: var(--clear);
   opacity: 0.12;
 }
 .inv-sun {

@@ -171,7 +171,9 @@ test.describe("landing", () => {
       if (m.type() === "error") errors.push(m.text());
     });
     await page.goto("/");
-    await expect(page.getByRole("heading", { level: 1 })).toHaveAccessibleName(/Winter smog thins out/);
+    await expect(page.getByRole("heading", { level: 1 })).toHaveAccessibleName(
+      /A shield against winter smog/,
+    );
     for (const name of [
       "Right now, city by city",
       "One plan for everyone at home",

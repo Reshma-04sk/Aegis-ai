@@ -82,7 +82,7 @@ textarea {
 }
 input::placeholder,
 textarea::placeholder {
-  color: #a9b8c5;
+  color: var(--placeholder);
 }
 input[aria-invalid="true"] {
   border: 2px solid var(--avoid);

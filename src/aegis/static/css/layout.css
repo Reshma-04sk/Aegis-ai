@@ -46,9 +46,12 @@
   stroke-width: 2.4;
   stroke-linecap: round;
 }
-.brand svg circle {
-  fill: var(--sun);
-  stroke: none;
+.brand svg .shield {
+  stroke: var(--accent);
+  stroke-width: 2;
+}
+.brand svg .sun-line {
+  stroke: var(--sun);
 }
 .topbar nav {
   display: flex;
@@ -155,7 +158,7 @@ button {
 }
 .button:hover,
 button:hover {
-  background: #c7e7f8;
+  background: var(--accent-hover);
 }
 .button:active,
 button:active {

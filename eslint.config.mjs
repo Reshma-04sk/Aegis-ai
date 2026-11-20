@@ -23,11 +23,11 @@ export default [
     languageOptions: { sourceType: "module", globals: globals.browser },
     plugins: { jsdoc },
     rules: {
-      "max-lines": ["error", { max: 200, skipBlankLines: true, skipComments: true }],
-      "max-lines-per-function": ["error", { max: 40, skipBlankLines: true, skipComments: true }],
-      complexity: ["error", 8],
+      "max-lines": ["error", { max: 110, skipBlankLines: true, skipComments: true }],
+      "max-lines-per-function": ["error", { max: 30, skipBlankLines: true, skipComments: true }],
+      complexity: ["error", 6],
       "max-depth": ["error", 3],
-      "max-params": ["error", 4],
+      "max-params": ["error", 3],
       "no-magic-numbers": [
         "error",
         {

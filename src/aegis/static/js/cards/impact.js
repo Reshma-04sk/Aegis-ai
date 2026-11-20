@@ -1,7 +1,7 @@
 // Impact cards for a plan: the air at home, and the two separate impacts of a commute choice
 // (climate emissions for the whole week, and the PM2.5 you breathe on each trip).
-import { fmt } from "./format.js";
-import { card, el, list, th } from "./dom.js";
+import { fmt } from "../format.js";
+import { card, el, list, th } from "../dom.js";
 
 /** @typedef {import("#api").ModeOption} ModeOption */
 

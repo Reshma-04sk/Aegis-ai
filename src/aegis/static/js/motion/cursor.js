@@ -23,6 +23,29 @@ export function startCursor() {
   const ring = layer("cursor-ring");
   document.body.append(dot, ring);
   root.classList.add("has-cursor");
+  const move = tracker(root, dot, ring);
+  const hide = () => root.classList.remove("cursor-visible");
+  window.addEventListener("pointermove", move, { passive: true });
+  window.addEventListener("pointerdown", () => root.classList.add("cursor-down"));
+  window.addEventListener("pointerup", () => root.classList.remove("cursor-down"));
+  document.addEventListener("pointerleave", hide);
+  window.addEventListener("blur", hide);
+  return () => {
+    window.removeEventListener("pointermove", move);
+    root.classList.remove("has-cursor", "cursor-visible");
+    dot.remove();
+    ring.remove();
+  };
+}
+
+/**
+ * Pointer handler: the dot jumps to the pointer, the ring eases after it frame by frame.
+ * @param {HTMLElement} root
+ * @param {HTMLElement} dot
+ * @param {HTMLElement} ring
+ * @returns {(event: PointerEvent) => void}
+ */
+function tracker(root, dot, ring) {
   const pointer = { x: CURSOR.offscreen, y: CURSOR.offscreen };
   const trail = { x: CURSOR.offscreen, y: CURSOR.offscreen };
   let frame = 0;
@@ -46,17 +69,5 @@ export function startCursor() {
     root.classList.add("cursor-visible");
     if (!frame) frame = requestAnimationFrame(follow);
   };
-  const hide = () => root.classList.remove("cursor-visible");
-
-  window.addEventListener("pointermove", move, { passive: true });
-  window.addEventListener("pointerdown", () => root.classList.add("cursor-down"));
-  window.addEventListener("pointerup", () => root.classList.remove("cursor-down"));
-  document.addEventListener("pointerleave", hide);
-  window.addEventListener("blur", hide);
-  return () => {
-    window.removeEventListener("pointermove", move);
-    root.classList.remove("has-cursor", "cursor-visible");
-    dot.remove();
-    ring.remove();
-  };
+  return move;
 }

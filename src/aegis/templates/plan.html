@@ -11,7 +11,9 @@
 {% block head %}
     <!-- The planner builds its form rows from saved data before the first paint (blocking="render"),
          so the form never shifts as rows appear. Imports are preloaded in parallel. -->
-    {% for module in ("config", "format", "dom", "chart", "household", "render") %}
+    {% for module in ("config", "format", "dom", "chart", "api", "rows", "household", "storage", "location",
+                       "results", "render", "cards/present", "cards/overview", "cards/station",
+                       "cards/briefing", "cards/members", "cards/schedule", "cards/hourly", "cards/impact") %}
     <link rel="modulepreload" href="/static/js/{{ module }}.js" />
     {% endfor %}
     <script type="module" src="/static/js/app.js" blocking="render"></script>

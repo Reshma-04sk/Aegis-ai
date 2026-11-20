@@ -65,11 +65,10 @@ function timeLabel(index, time, y) {
 /**
  * One bar, coloured by its EPA category.
  * @param {HourlyPoint & { us_aqi: number }} point
- * @param {number} index
- * @param {number} scale
+ * @param {{ index: number, scale: number }} at slot index and pixels per AQI unit
  * @param {ChartStyle} style
  */
-function bar(point, index, scale, style) {
+function bar(point, { index, scale }, style) {
   const baseline = style.plotHeight + AXIS_GAP;
   const height = Math.max(style.minBar, point.us_aqi * scale);
   const rect = svg("rect", {
@@ -101,7 +100,7 @@ export function barChart(points, style, windowStart = -1) {
   });
   points.forEach((point, index) => {
     if (point.us_aqi !== null) {
-      plot.append(bar({ ...point, us_aqi: point.us_aqi }, index, style.plotHeight / top, style));
+      plot.append(bar({ ...point, us_aqi: point.us_aqi }, { index, scale: style.plotHeight / top }, style));
     }
     if (index % style.labelEvery === 0) plot.append(timeLabel(index, point.time, baseline + LABEL_DROP));
   });

@@ -50,17 +50,40 @@ export function startParticles({ gsap }, canvas) {
   const ctx = canvas.getContext("2d");
   if (!ctx) return () => {};
   const size = { width: 0, height: 0 };
-  const resize = () => {
-    const dpr = Math.min(window.devicePixelRatio || 1, PARTICLES.maxPixelRatio);
-    size.width = canvas.clientWidth;
-    size.height = canvas.clientHeight;
-    canvas.width = Math.round(size.width * dpr);
-    canvas.height = Math.round(size.height * dpr);
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-  };
+  const resize = () => fitCanvas(canvas, ctx, size);
   resize();
   window.addEventListener("resize", resize);
-  const specks = scatter(size.width, size.height);
+  const draw = painter(ctx, size, scatter(size.width, size.height));
+  gsap.ticker.add(draw);
+  return () => {
+    gsap.ticker.remove(draw);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+  };
+}
+
+/**
+ * Match the canvas backing store to its CSS size, capped in device pixel ratio.
+ * @param {HTMLCanvasElement} canvas
+ * @param {CanvasRenderingContext2D} ctx
+ * @param {{ width: number, height: number }} size updated in place
+ */
+function fitCanvas(canvas, ctx, size) {
+  const dpr = Math.min(window.devicePixelRatio || 1, PARTICLES.maxPixelRatio);
+  size.width = canvas.clientWidth;
+  size.height = canvas.clientHeight;
+  canvas.width = Math.round(size.width * dpr);
+  canvas.height = Math.round(size.height * dpr);
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+}
+
+/**
+ * One frame of drifting specks, faded by the current air density.
+ * @param {CanvasRenderingContext2D} ctx
+ * @param {{ width: number, height: number }} size
+ * @param {ReturnType<typeof scatter>} specks
+ * @returns {() => void}
+ */
+function painter(ctx, size, specks) {
   // A clear sky skips drawing entirely: clearing an empty canvas every frame would still
   // repaint it, and that forces the glass panels above it to re-blur on every frame.
   let blank = false;
@@ -82,9 +105,5 @@ export function startParticles({ gsap }, canvas) {
     });
     ctx.globalAlpha = 1;
   };
-  gsap.ticker.add(draw);
-  return () => {
-    gsap.ticker.remove(draw);
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-  };
+  return draw;
 }

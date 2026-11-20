@@ -72,6 +72,45 @@ export function toM3h(value, unit) {
   return unit === "cfm" ? Math.round(n * CFM_TO_M3H) : Math.round(n);
 }
 
+/** @param {FormValues["activities"]} rows */
+const activitiesOf = (rows) =>
+  rows
+    .filter((a) => a.label.trim())
+    .map((a) => ({
+      label: a.label.trim(),
+      activity: a.activity,
+      duration_hours: Number(a.duration),
+      earliest_hour: Number(a.earliest),
+      latest_hour: Number(a.latest),
+    }));
+
+/**
+ * The room section, or undefined when no floor area was given.
+ * @param {FormValues["home"]} h
+ */
+function homeOf(h) {
+  if (!(Number(h.area) > 0)) return undefined;
+  /** @type {NonNullable<PlanRequest["home"]>} */
+  const home = { floor_area_m2: Number(h.area), ceiling_height_m: Number(h.ceiling) };
+  const cadr = toM3h(h.cadr, h.unit);
+  if (cadr) home.purifier_cadr_m3h = cadr;
+  return home;
+}
+
+/**
+ * The commute section, or undefined when no distance was given.
+ * @param {FormValues["commute"]} c
+ */
+function commuteOf(c) {
+  if (!(Number(c.distance) > 0)) return undefined;
+  return {
+    distance_km: Number(c.distance),
+    current_mode: c.mode,
+    occupants: Number(c.occupants),
+    trips_per_week: Number(c.trips),
+  };
+}
+
 /**
  * Build the /api/plan payload from plain form values; drops empty optional sections.
  * @param {FormValues} v
@@ -84,28 +123,11 @@ export function buildPayload(v) {
   };
   if (v.coords) Object.assign(payload, v.coords);
   else payload.location = v.location.trim();
-  payload.activities = v.activities
-    .filter((a) => a.label.trim())
-    .map((a) => ({
-      label: a.label.trim(),
-      activity: a.activity,
-      duration_hours: Number(a.duration),
-      earliest_hour: Number(a.earliest),
-      latest_hour: Number(a.latest),
-    }));
-  if (Number(v.home.area) > 0) {
-    payload.home = { floor_area_m2: Number(v.home.area), ceiling_height_m: Number(v.home.ceiling) };
-    const cadr = toM3h(v.home.cadr, v.home.unit);
-    if (cadr) payload.home.purifier_cadr_m3h = cadr;
-  }
-  if (Number(v.commute.distance) > 0) {
-    payload.commute = {
-      distance_km: Number(v.commute.distance),
-      current_mode: v.commute.mode,
-      occupants: Number(v.commute.occupants),
-      trips_per_week: Number(v.commute.trips),
-    };
-  }
+  payload.activities = activitiesOf(v.activities);
+  const home = homeOf(v.home);
+  const commute = commuteOf(v.commute);
+  if (home) payload.home = home;
+  if (commute) payload.commute = commute;
   if (v.note.trim()) payload.note = v.note.trim();
   return payload;
 }

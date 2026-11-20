@@ -1,9 +1,8 @@
 // Planner page: motion answers what you do. Rows ease in, sections slide open, results rise in,
 // the city gains depth as you scroll, and the sky settles to the plan's real AQI band.
-import { EASE, OPEN, PLANNER, RESULTS } from "./constants.js";
+import { EASE, OPEN, PLANNER } from "./constants.js";
 import { finePointer } from "./env.js";
-import { smoothScroller, topOffset } from "./scroll.js";
-import { settleSky } from "./sky.js";
+import { riseResults } from "./results.js";
 
 /** @typedef {import("./env.js").Kit} Kit */
 
@@ -96,49 +95,6 @@ function slideOpenSections({ gsap }, form) {
         clearProps: "height,transform,overflow",
       });
     });
-  });
-}
-
-/**
- * Results: glide down to them, then the cards rise in turn and the bars grow. data-animating
- * marks the short entrance so tests can wait for it to settle.
- * @param {Kit} kit
- * @param {HTMLElement} results
- */
-function riseResults(kit, results) {
-  document.addEventListener("aegis:results", (event) => {
-    const lenis = smoothScroller();
-    if (!lenis) return; // reduced motion was switched on mid-visit: results just appear
-    lenis.resize(); // the results just grew the page
-    kit.ScrollTrigger.refresh();
-    lenis.scrollTo(results, { offset: topOffset(), duration: RESULTS.glide });
-    results.dataset.animating = "true";
-    kit.gsap
-      .timeline({ onComplete: () => delete results.dataset.animating })
-      .from(
-        results.children,
-        {
-          y: RESULTS.cardRise,
-          duration: RESULTS.cardDuration,
-          ease: EASE.enter,
-          stagger: RESULTS.cardStagger,
-          clearProps: "transform",
-        },
-        RESULTS.cardsAt,
-      )
-      .from(
-        results.querySelectorAll(".chart .bar"),
-        {
-          scaleY: 0,
-          transformOrigin: "50% 100%",
-          duration: RESULTS.barDuration,
-          ease: EASE.open,
-          stagger: RESULTS.barStagger,
-        },
-        RESULTS.barsAt,
-      );
-    const aqi = /** @type {CustomEvent<{ aqi?: number }>} */ (event).detail?.aqi;
-    if (typeof aqi === "number") settleSky(kit, aqi);
   });
 }
 

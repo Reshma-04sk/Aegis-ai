@@ -4,41 +4,17 @@ import { ageText, fmt, hourLabel } from "./format.js";
 import { byId, categoryBadge, el } from "./dom.js";
 import { LIVE_CHART, barChart } from "./chart.js";
 import { STALE_TEXT, categoryOf } from "./config.js";
+import { postPlan } from "./api.js";
+import { countUp } from "./count-up.js";
 
 /** @typedef {import("#api").PlanResponse} PlanResponse */
 
 const box = byId("live");
 const chips = /** @type {HTMLButtonElement[]} */ ([...document.querySelectorAll(".chip[data-city]")]);
-const reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
 /** @type {Map<string, PlanResponse>} */
 const cache = new Map();
 let current = 0;
 const HOURS_SHOWN = 24;
-const COUNT_UP_MS = 900;
-
-/** Fast start, gentle stop: 1 - (1 - t)^3. */
-const easeOutCubic = (/** @type {number} */ t) => 1 - (1 - t) * (1 - t) * (1 - t);
-
-/**
- * Count a number up to its value (instantly with reduced motion).
- * @param {HTMLElement} node
- * @param {number} target
- */
-function countUp(node, target) {
-  if (reduced.matches) {
-    node.textContent = String(target);
-    return;
-  }
-  const start = performance.now();
-  /** @param {number} now */
-  const step = (now) => {
-    const t = Math.min(1, (now - start) / COUNT_UP_MS);
-    node.textContent = String(Math.round(target * easeOutCubic(t)));
-    if (t < 1) requestAnimationFrame(step);
-  };
-  requestAnimationFrame(step);
-}
-
 /** @param {PlanResponse} d */
 function chart(d) {
   const hours = d.hourly.slice(0, HOURS_SHOWN);
@@ -54,35 +30,45 @@ function chart(d) {
 }
 
 /**
+ * One line on the nearest station's measured PM2.5, or null when there is none.
+ * @param {PlanResponse["station"]} s
+ */
+function stationLine(s) {
+  const pm = s?.readings.find((r) => r.pollutant === "pm25" && r.value !== null);
+  if (!s || !pm) return null;
+  const age = pm.data_age_minutes === null ? "time unknown" : ageText(pm.data_age_minutes);
+  const text = `Measured at ${s.station_name} (${s.provider}), ${fmt(s.distance_km, 1)} km away: PM2.5 ${fmt(pm.value, 1)} ${pm.unit}, ${age}.`;
+  return el("p", text, "meta");
+}
+
+/**
+ * Place, AQI (counted up), category and data age.
+ * @param {PlanResponse} d
+ * @param {HTMLElement} value the span the AQI is counted into
+ */
+function nowSummary(d, value) {
+  const left = el("div", undefined, "live-now");
+  const num = el("p", undefined, `live-aqi cat-${categoryOf(d.aqi)?.key ?? "unknown"}`);
+  num.append(value, el("span", "US AQI forecast now", "unit"));
+  const stale = d.provenance.stale ? ` ${STALE_TEXT}` : "";
+  const age = el(
+    "p",
+    `Model estimate (CAMS), fetched ${ageText(d.provenance.data_age_minutes)}.${stale}`,
+    "meta",
+  );
+  left.append(el("p", d.location, "live-place"), num, categoryBadge(d.aqi), age);
+  return left;
+}
+
+/**
  * @param {PlanResponse} d
  * @param {string} city
  */
 function render(d, city) {
-  const cat = categoryOf(d.aqi);
-  const left = el("div", undefined, "live-now");
-  const num = el("p", undefined, `live-aqi cat-${cat?.key ?? "unknown"}`);
   const value = el("span", "0");
-  num.append(value, el("span", "US AQI forecast now", "unit"));
-  left.append(el("p", d.location, "live-place"), num, categoryBadge(d.aqi));
-  const p = d.provenance;
-  left.append(
-    el(
-      "p",
-      `Model estimate (CAMS), fetched ${ageText(p.data_age_minutes)}.${p.stale ? ` ${STALE_TEXT}` : ""}`,
-      "meta",
-    ),
-  );
-  const s = d.station;
-  const pm = s?.readings.find((r) => r.pollutant === "pm25" && r.value !== null);
-  if (s && pm) {
-    left.append(
-      el(
-        "p",
-        `Measured at ${s.station_name} (${s.provider}), ${fmt(s.distance_km, 1)} km away: PM2.5 ${fmt(pm.value, 1)} ${pm.unit}, ${pm.data_age_minutes === null ? "time unknown" : ageText(pm.data_age_minutes)}.`,
-        "meta",
-      ),
-    );
-  }
+  const left = nowSummary(d, value);
+  const station = stationLine(d.station);
+  if (station) left.append(station);
   const cta = el("a", `Plan a day in ${city}`, "button");
   cta.href = `/plan?city=${encodeURIComponent(city)}`;
   left.append(cta);
@@ -90,6 +76,20 @@ function render(d, city) {
   box.setAttribute("aria-busy", "false");
   countUp(value, Math.round(d.aqi));
   requestAnimationFrame(() => requestAnimationFrame(() => box.classList.add("is-in")));
+}
+
+/**
+ * The city's plan, fetched once per page view.
+ * @param {string} city
+ * @returns {Promise<PlanResponse>}
+ */
+async function planFor(city) {
+  const cached = cache.get(city);
+  if (cached) return cached;
+  const response = await postPlan({ location: city });
+  if (!response.ok || !response.data) throw new Error(String(response.status));
+  cache.set(city, response.data);
+  return response.data;
 }
 
 /**
@@ -102,17 +102,7 @@ async function show(city) {
   box.setAttribute("aria-busy", "true");
   box.replaceChildren(el("p", `Fetching the latest forecast for ${city}.`, "help"));
   try {
-    let plan = cache.get(city);
-    if (!plan) {
-      const response = await fetch("/api/plan", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ location: city }),
-      });
-      if (!response.ok) throw new Error(String(response.status));
-      plan = /** @type {PlanResponse} */ (await response.json());
-      cache.set(city, plan);
-    }
+    const plan = await planFor(city);
     if (token === current) render(plan, city);
   } catch {
     if (token !== current) return;

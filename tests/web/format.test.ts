@@ -1,6 +1,6 @@
+// Pure helpers: categories, text, unit conversion, the request body and error messages.
 import assert from "node:assert/strict";
-import { test } from "node:test";
-
+import { test } from "vitest";
 import {
   ageText,
   buildPayload,
@@ -9,9 +9,10 @@ import {
   fmt,
   hourLabel,
   toM3h,
-} from "../../src/aegis/static/js/format.js";
+} from "../../web/src/lib/format";
+import type { FormValues } from "../../web/src/lib/types";
 
-const base = {
+const base: FormValues = {
   coords: null,
   location: "  Delhi ",
   members: [{ name: " ", groups: ["child"] }],
@@ -65,8 +66,10 @@ test("buildPayload keeps only filled sections", () => {
   const p = buildPayload(base);
   assert.deepEqual(p.members, [{ name: "You", groups: ["child"] }]);
   assert.equal(p.location, "Delhi");
-  assert.equal(p.activities.length, 1);
-  assert.equal(p.activities[0].duration_hours, 1);
+  assert.deepEqual(
+    p.activities?.map((a) => a.duration_hours),
+    [1],
+  );
   assert.equal("home" in p, false);
   assert.equal("commute" in p, false);
   assert.equal("note" in p, false);

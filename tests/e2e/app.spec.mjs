@@ -26,6 +26,16 @@ async function layoutShift(page) {
   );
 }
 
+// Console errors include Content-Security-Policy and Trusted Types violations.
+function collectErrors(page) {
+  const errors = [];
+  page.on("pageerror", (e) => errors.push(e.message));
+  page.on("console", (m) => {
+    if (m.type() === "error") errors.push(m.text());
+  });
+  return errors;
+}
+
 async function planFor(page, place) {
   await page.getByLabel("City or neighbourhood").fill(place);
   await page.getByRole("button", { name: "Plan my day" }).click();
@@ -49,6 +59,7 @@ test.describe("planner", () => {
   });
 
   test("household plan shows verdicts, provenance, schedule, indoor and commute", async ({ page }) => {
+    const errors = collectErrors(page);
     await page.getByRole("checkbox", { name: "Asthma / lung" }).check();
     await page.getByText("Home and purifier (optional)").click();
     await page.getByLabel("Main room floor area (m²)").fill("15");
@@ -84,8 +95,8 @@ test.describe("planner", () => {
     await expect(results.getByText(/breathe in more particles per trip/).first()).toBeVisible();
     // No API key in tests, so the rule-based briefing must remain.
     await expect(results.getByText("Rule-based briefing.")).toBeVisible();
-    await expect(results).not.toHaveAttribute("data-animating", "true");
     await expectNoA11yViolations(page);
+    expect(errors).toEqual([]);
   });
 
   test("unknown place is announced as an alert", async ({ page }) => {
@@ -132,34 +143,34 @@ test.describe("landing", () => {
   });
 
   test("hero, every section, and WCAG 2.1 AA with live data shown", async ({ page }) => {
-    const errors = [];
-    page.on("pageerror", (e) => errors.push(e.message));
-    page.on("console", (m) => {
-      if (m.type() === "error") errors.push(m.text());
-    });
+    const errors = collectErrors(page);
     await page.goto("/");
     await expect(page.getByRole("heading", { level: 1 })).toHaveAccessibleName(
-      /Today’s air, read for the people you live with/,
+      /The air keeps a schedule\. Plan your family around it\./,
     );
     for (const name of [
       "Air quality now",
       "The next 24 hours",
-      "Today’s call",
+      "Today in Delhi",
       "One plan, four decisions",
       "How Aegis decides",
       "What the numbers are, and are not",
       "Questions",
+      "Know who goes out, and when.",
     ]) {
       await expect(page.getByRole("heading", { level: 2, name })).toBeAttached();
     }
-    await expect(page.getByText("Delhi, Test State", { exact: true })).toBeVisible();
-    await expect(page.locator("#tile-gauge .figure")).toContainText("170");
-    await expect(page.locator("#tile-gauge")).toContainText("Unhealthy");
+    await expect(page.getByRole("heading", { level: 3, name: "Today’s call" })).toBeAttached();
+    const now = page.getByRole("region", { name: "Air quality now" });
+    await expect(now.getByText("Delhi, Test State", { exact: true })).toBeVisible();
+    await expect(now.locator(".figure-value")).toHaveText("170");
+    await expect(now).toContainText("Unhealthy");
+    await expect(now).toContainText(/Model estimate \(.*\), fetched 5 min ago/);
     await expect(page.locator("#live-status")).toHaveText("Delhi, Test State: US AQI 170, Unhealthy.");
-    // The hours tile brackets the cleanest two hours and says which they are.
-    await expect(page.locator(".hours-chart .window")).toHaveCount(1);
-    await expect(page.locator(".hours-chart figcaption")).toContainText("Cleanest two hours");
-    await expect(page.getByText(/Measured at Fixture Road \(CPCB\)/)).toBeVisible();
+    // The strip brackets the cleanest two hours and says which they are.
+    await expect(page.locator(".hero .strip-clean")).toHaveCount(1);
+    await expect(page.locator(".hero .strip-window")).toContainText("Cleanest two hours");
+    await expect(page.getByText(/Station measurement at Fixture Road \(CPCB\)/)).toBeVisible();
     await expect(page.getByRole("link", { name: "Plan a day in Delhi" })).toHaveAttribute(
       "href",
       "/plan?city=Delhi",
@@ -201,12 +212,35 @@ test.describe("landing", () => {
     await expect(page.getByText("turns public air-quality data and published guidance")).toBeVisible();
   });
 
-  test("reduced motion: tiles, dial and bars appear in their final state with no animation", async ({
+  test("reduced motion: the dial, bars and sections appear in their final state with no animation", async ({
     page,
   }) => {
     await page.emulateMedia({ reducedMotion: "reduce" });
     await page.goto("/");
-    await expect(page.locator("#tile-gauge .figure-value")).toHaveText("170");
+    await expect(page.locator(".instrument .figure-value")).toHaveText("170");
     expect(await page.evaluate(() => document.getAnimations().length)).toBe(0);
+    // GSAP is never downloaded for reduced-motion visitors, so nothing can be left hidden.
+    const scripts = await page.evaluate(() => performance.getEntriesByType("resource").map((r) => r.name));
+    expect(scripts.filter((name) => /gsap|ScrollTrigger/.test(name))).toEqual([]);
+    await expect(page.locator("#method .method-step").first()).toHaveCSS("opacity", "1");
+  });
+
+  test("the hour scrubber is keyboard operable and reads each hour as text", async ({ page }) => {
+    await page.goto("/");
+    const slider = page.getByRole("slider", { name: "Read any hour" });
+    await expect(slider).toHaveAttribute("aria-valuetext", /US AQI 170 \(Unhealthy\)/);
+    await slider.focus();
+    await page.keyboard.press("End");
+    await expect(page.locator(".hero .scrub-readout")).toContainText(
+      "US AQI 145 (Unhealthy for Sensitive Groups)",
+    );
+  });
+
+  test("scrolled sections are revealed, never left hidden", async ({ page }) => {
+    await page.goto("/");
+    for (const id of ["covers", "method", "trust"]) {
+      await page.locator(`#${id}`).scrollIntoViewIfNeeded();
+      await expect(page.locator(`#${id} h3`).first()).toHaveCSS("opacity", "1");
+    }
   });
 });

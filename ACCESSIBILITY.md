@@ -9,7 +9,7 @@
 | axe-core (`wcag2a`, `wcag2aa`, `wcag21a`, `wcag21aa`) on every page state: empty form, filled plan, landing page with live data, errors | `tests/e2e/app.spec.mjs`, run at **1440 px and 375 px** | 0 violations |
 | Lighthouse accessibility, live site | `/` and `/plan`, mobile and desktop | **100 / 100** on all four runs |
 | Keyboard-only flows (skip link, chips, FAQ, form, in-page links) | e2e tests | pass |
-| `prefers-reduced-motion` honoured (bars drawn at full height at once, no smooth scrolling, no transitions) | e2e tests with emulated reduced motion | pass |
+| `prefers-reduced-motion` honoured (no animation is created; dial, numbers and bars appear in their final state) | e2e tests with emulated reduced motion | pass |
 | No horizontal scroll at 375 px | e2e test measures `scrollWidth` | pass |
 
 ## How each requirement is met
@@ -21,9 +21,10 @@
 - **Charts have a text twin.** The 24-hour bar chart is decorative (`aria-hidden`). The same
   values are in a real `<table>` with a caption and column scopes, inside a "Hourly values"
   disclosure (`cards/hourly.js` `hourlyTable()`).
-- **Contrast.** Every text colour is at least 4.5:1 on its background. The EPA category colours
-  are used as bright fills for chart bars, and in darkened versions for text (for example
-  Unhealthy is `#a61f17` as text, `#e03131` as a bar).
+- **Contrast.** Every text colour is at least 4.5:1 on its background, placeholders included
+  (5.7:1). Form-control borders are 3.7:1. The EPA category colours are bright fills for chart
+  bars, with a thin ink outline so the pale bands stay visible, and darkened versions for text
+  (for example Unhealthy is `#a61f17` as text, `#e03131` as a bar).
 - **Fonts.** Atkinson Hyperlegible Next, a typeface designed for low-vision readers, is used for
   body text.
 
@@ -33,8 +34,10 @@
   stands apart from the green actions and the EPA colours.
 - Removing a household row moves focus to its neighbour or the add button, never to `<body>`.
 - The scrollable commute table is a focusable, labelled region, so keyboard users can scroll it.
-- **Motion.** The only animation is the hour bars growing once per city. Under
-  `prefers-reduced-motion` they are drawn at full height and scrolling is instant.
+- **Motion.** The dial sweep, count-ups, rising tiles and growing bars run once per data load.
+  Under `prefers-reduced-motion` no animation is created and scrolling is instant.
+- **Live updates.** Switching city updates one polite status line ("Delhi: US AQI 209, Very
+  Unhealthy."), so screen-reader users hear the result once instead of seven tiles changing.
 - The system cursor is never replaced or hidden.
 
 **Understandable**

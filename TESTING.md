@@ -60,12 +60,13 @@ data (`tests/e2e/fixture_app.py`).
 
 **Landing page (`/`)**
 - Loads without layout shift: fonts swap into metric-matched fallbacks.
-- The hero and every section pass WCAG 2.1 AA with live data shown.
-- City chips switch the live forecast and announce which city is pressed.
-- The hero instrument brackets the cleanest two hours and names them.
-- Calls to action open the planner and the method section.
+- Every tile and section passes WCAG 2.1 AA with live data shown, and the status line announces
+  the city's AQI once.
+- City chips switch the dashboard and announce which city is pressed.
+- The hours tile brackets the cleanest two hours and names them.
+- Calls to action open the method section and the planner for the chosen city.
 - FAQ answers open from the keyboard.
-- Reduced motion draws the hour bars at full height at once.
+- Reduced motion: the dial, numbers and bars appear in their final state and no animation exists.
 
 ## How the tests are designed
 - **Edge cases first.** Boundary AQI values, empty or missing hours, midnight wrap-around,

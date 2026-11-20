@@ -12,6 +12,18 @@
   gap: 1.5rem;
   align-items: center;
 }
+.overview-dial {
+  display: grid;
+  justify-items: center;
+  width: min(100%, 15rem);
+}
+.overview-dial .gauge {
+  width: 100%;
+}
+.overview-dial .aqi-number {
+  align-items: center;
+  margin-top: -2.75rem;
+}
 .aqi-number {
   margin: 0;
   font-family: var(--display);

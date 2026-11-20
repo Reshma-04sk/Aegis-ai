@@ -1,30 +1,36 @@
-/* Landing sections: features, the winter inversion, people, steps, sources, FAQ, closing. */
+/* Landing sections below the dashboard: what a plan covers, the method, trust, questions. */
 
-.legend {
+.covers {
+  list-style: none;
+  margin: 0;
+  padding: 0;
   display: grid;
-  gap: 2rem 3rem;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 24rem), 1fr));
-  max-width: 60rem;
-  margin: 0;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
 }
-.legend dt {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  font-family: var(--display);
-  font-weight: 700;
-  font-size: var(--step-1);
-  margin-bottom: 0.35rem;
+.covers li {
+  background: var(--card);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-lg);
+  padding: 1.35rem;
+  box-shadow: var(--shadow);
 }
-.legend dd {
-  margin: 0;
+.covers h3 {
+  font-size: 1.2rem;
+  margin: 0.85rem 0 0.4rem;
+}
+.covers p,
+.method p,
+.trust p {
   color: var(--muted);
-  max-width: var(--measure);
+  margin: 0;
 }
 .icon {
-  flex: none;
-  width: 2.25rem;
-  height: 2.25rem;
+  width: 2.75rem;
+  height: 2.75rem;
+  padding: 0.5rem;
+  border-radius: var(--radius);
+  background: #e3f1ee;
   fill: none;
   stroke: var(--shield);
   stroke-width: 2;
@@ -32,99 +38,48 @@
   stroke-linejoin: round;
 }
 
-/* Winter inversion: three phases in order beside a static diagram. */
-.inversion-layout {
-  display: grid;
-  gap: 2rem;
-  grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
-  align-items: start;
-}
-.phases {
-  margin: 0 0 1rem;
-  padding-left: 1.25rem;
-}
-.phases li {
-  margin-bottom: 1rem;
-}
-.phases p {
-  margin: 0;
-  color: var(--muted);
-}
-.inversion {
-  width: 100%;
-  height: auto;
-  border: 1px solid var(--rule);
-  border-radius: var(--radius);
-  background: var(--panel);
-}
-.inv-sky {
-  fill: #dfe9ee;
-}
-.inv-smog {
-  fill: #b9aa92;
-}
-.inv-lid {
-  stroke: var(--dawn);
-  stroke-width: 3;
-  stroke-dasharray: 8 6;
-}
-.inv-label {
-  fill: var(--ink);
-  font: 600 14px var(--text);
-}
-.inv-sun {
-  fill: var(--dawn);
-}
-.inv-city {
-  fill: var(--ink);
-}
-
-.people {
+/* The method is a real sequence: sense, then decide, then explain. */
+.method {
   list-style: none;
   margin: 0;
   padding: 0;
   display: grid;
-  gap: 0 3rem;
-  grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr));
+  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+  counter-reset: step;
 }
-.people li {
-  padding: 1.25rem 0;
-  border-bottom: 1px solid var(--rule);
+.method li {
+  counter-increment: step;
+  border-top: 3px solid var(--shield);
+  padding-top: 1rem;
 }
-.people p,
-.steps p,
-.sources p {
-  color: var(--muted);
-  margin: 0;
+.method h3 {
+  font-size: var(--step-1);
+  margin-bottom: 0.4rem;
 }
-
-.steps {
-  margin: 0;
-  padding-left: 1.5rem;
-  display: grid;
-  gap: 1.25rem;
-  max-width: 46rem;
-}
-.steps li::marker {
-  font-family: var(--display);
-  font-weight: 700;
+.method h3::before {
+  content: counter(step) ". ";
   color: var(--shield);
 }
 
-.sources {
+.trust {
   display: grid;
-  gap: 2rem;
-  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
 }
-.sources > div {
-  border-top: 4px solid var(--ink);
-  padding-top: 1rem;
+.trust > div {
+  border-left: 4px solid var(--ink);
+  padding: 0.25rem 0 0.25rem 1rem;
 }
-.sources > div:last-child {
-  border-top-color: var(--shield);
+.trust > div:nth-child(2) {
+  border-left-color: var(--shield);
 }
-.sources-note {
-  margin: 1.5rem 0 0;
+.trust > div:nth-child(3) {
+  border-left-color: var(--dawn);
+}
+.trust h3 {
+  font-size: 1.2rem;
+  margin-bottom: 0.35rem;
 }
 
 .faq details {
@@ -142,24 +97,4 @@
 }
 .faq details p {
   color: var(--muted);
-}
-
-.closing {
-  max-width: none;
-  border-top: 0;
-  background: var(--shield);
-  color: var(--accent-fg);
-  text-align: center;
-}
-.closing h2 {
-  font-size: var(--step-3);
-  margin-bottom: 0.75rem;
-}
-.closing .button {
-  background: var(--panel);
-  border-color: var(--panel);
-  color: var(--shield);
-}
-.closing .button:hover {
-  background: var(--fog);
 }

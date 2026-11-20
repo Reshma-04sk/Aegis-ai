@@ -11,7 +11,7 @@
     <link rel="icon" href="/static/img/icon.svg" type="image/svg+xml" />
     <link rel="preload" href="/static/vendor/fonts/fraunces.woff2" as="font" type="font/woff2" crossorigin />
     {# Split by concern and linked in cascade order; the same set serves both pages (cached once). #}
-    {% for sheet in ("foundation", "layout", "hero", "sections", "planner", "form", "results", "colours") %}
+    {% for sheet in ("foundation", "layout", "dashboard", "tiles", "sections", "planner", "form", "results", "colours") %}
     <link rel="stylesheet" href="/static/css/{{ sheet }}.css" />
     {% endfor %}
     <!-- Constants shared with the API (AQI categories, labels, limits); data only, never executed. -->

@@ -1,7 +1,7 @@
 /* Fonts, metric-matched fallbacks, design tokens, base typography and utilities. */
 
-/* AEGIS reads like an instrument in daylight: cool mineral paper, slate ink, one shield green
-   for actions, and colour otherwise reserved for the air itself (EPA categories). */
+/* Aegis is a live air dashboard: white tiles on cool mineral, slate ink, one shield green for
+   actions, and colour otherwise reserved for the air itself (EPA categories). */
 
 @font-face {
   font-family: "Fraunces";
@@ -53,12 +53,15 @@
   --fg: var(--ink);
   --muted: #4a5d6b;
   --border: var(--rule);
-  --card: var(--panel);
+  --card: #ffffff;
   --well: #edf3f5;
   --accent: var(--shield);
   --accent-fg: #ffffff;
   --accent-hover: #0a5549;
-  --placeholder: #66798a;
+  --placeholder: #56697a;
+  --control: #74879a; /* form-control borders: 3.7:1 on white */
+  --shadow: 0 1px 2px rgba(27, 43, 58, 0.06), 0 8px 24px -12px rgba(27, 43, 58, 0.18);
+  --shadow-lift: 0 2px 4px rgba(27, 43, 58, 0.08), 0 18px 36px -14px rgba(27, 43, 58, 0.28);
   --focus: #b3530f;
   /* Verdicts and AQI categories, as text on light surfaces (all at least 4.5:1 on --panel). */
   --go: #1d6f3a;
@@ -85,8 +88,9 @@
   --step-2: 1.777rem;
   --step-3: 2.369rem;
   --step-4: clamp(2.369rem, 5vw, 3.75rem);
-  --radius: 0.375rem;
-  --radius-sm: 0.25rem;
+  --radius-lg: 0.875rem;
+  --radius: 0.5rem;
+  --radius-sm: 0.3rem;
   --measure: 38rem;
   --page: 74rem;
   --gutter: clamp(1rem, 4vw, 2.5rem);

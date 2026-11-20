@@ -6,9 +6,10 @@ form {
 .card {
   background: var(--card);
   border: 1px solid var(--border);
-  border-radius: var(--radius);
+  border-radius: var(--radius-lg);
   padding: 1.25rem 1.4rem;
   margin-bottom: 1rem;
+  box-shadow: var(--shadow);
 }
 .card h2 {
   font-size: 1.45rem;
@@ -75,8 +76,8 @@ textarea {
   padding: 0.6rem 0.8rem;
   font: inherit;
   color: var(--fg);
-  background: var(--panel);
-  border: 1px solid var(--border);
+  background: var(--card);
+  border: 1px solid var(--control);
   border-radius: var(--radius-sm);
 }
 input::placeholder,

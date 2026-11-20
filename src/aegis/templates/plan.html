@@ -1,16 +1,16 @@
 {% extends "base.html" %}
-{% set title = "Plan your day – AEGIS" %}
+{% set title = "Build your plan – Aegis" %}
 {% set description = "Plan your household’s day around the smog: a verdict for each person, the cleanest "
   ~ "hours for each plan, indoor air steps and greener trips." %}
 {% set nav = [
   {"href": "/", "text": "Home"},
-  {"href": "/#how", "text": "How it decides"},
+  {"href": "/#method", "text": "How it decides"},
   {"href": "/#faq", "text": "Questions"},
 ] %}
 {% block head %}
     <!-- The planner builds its form rows from saved data before the first paint (blocking="render"),
          so the form never shifts as rows appear. Imports are preloaded in parallel. -->
-    {% for module in ("config", "format", "dom", "chart", "api", "rows", "household", "storage", "location",
+    {% for module in ("config", "format", "dom", "chart", "gauge", "motion", "api", "rows", "household", "storage", "location",
                        "results", "render", "cards/present", "cards/overview", "cards/station",
                        "cards/briefing", "cards/members", "cards/schedule", "cards/hourly", "cards/impact") %}
     <link rel="modulepreload" href="/static/js/{{ module }}.js" />
@@ -21,14 +21,14 @@
   <section class="planner" id="planner" aria-labelledby="planner-title">
     <div class="planner-grid">
       <div class="planner-form">
-        <h1 id="planner-title">Plan your family&#8217;s day</h1>
+        <h1 id="planner-title">Build your family&#8217;s plan</h1>
         {% include "partials/planner/form.html" %}
       </div>
       <section id="results" aria-live="polite" aria-busy="false" tabindex="-1" aria-label="Your plan">
         <div class="empty-state">
           <h2>Your plan appears here</h2>
-          <p>Enter a city and press Plan my day. You get a verdict for each person, the cleanest hours
-            for each plan, steps for the air at home and, if you add a commute, a greener option.</p>
+          <p>Add a city and press Plan my day. Each person gets a call, each outing gets its cleanest
+            hours, and you get steps for the air at home and, with a commute, a greener way to travel.</p>
         </div>
       </section>
     </div>

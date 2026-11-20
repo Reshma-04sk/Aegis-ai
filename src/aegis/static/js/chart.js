@@ -14,7 +14,6 @@ import { svg } from "./dom.js";
  * @property {number} labelEvery hours between time labels
  * @property {number} minBar smallest drawn bar height
  * @property {number} cornerRadius bar corner radius
- * @property {number} staggerMs per-bar delay for the CSS reveal transition (0 for none)
  */
 
 const SLOT = 14; // horizontal space per hour, in SVG units
@@ -23,7 +22,7 @@ const LABEL_DROP = 16; // time labels sit this far below the baseline
 const BOTTOM_PAD = 8; // room under the labels for descenders
 const WINDOW_HOURS = 2; // the highlighted "cleanest window" is two hours wide
 
-/** @type {ChartStyle} Landing widget: rounded bars that grow in one after another. */
+/** @type {ChartStyle} Dashboard: rounded bars (motion.grow animates them in). */
 export const LIVE_CHART = {
   floor: 200,
   plotHeight: 104,
@@ -31,7 +30,6 @@ export const LIVE_CHART = {
   labelEvery: 6,
   minBar: 2,
   cornerRadius: 2,
-  staggerMs: 25,
 };
 
 /** @type {ChartStyle} Planner results: wider bars and denser labels. */
@@ -42,7 +40,6 @@ export const PLAN_CHART = {
   labelEvery: 3,
   minBar: 0,
   cornerRadius: 0,
-  staggerMs: 0,
 };
 
 /**
@@ -71,7 +68,7 @@ function timeLabel(index, time, y) {
 function bar(point, { index, scale }, style) {
   const baseline = style.plotHeight + AXIS_GAP;
   const height = Math.max(style.minBar, point.us_aqi * scale);
-  const rect = svg("rect", {
+  return svg("rect", {
     x: index * SLOT + (SLOT - style.barWidth) / 2,
     y: baseline - height,
     width: style.barWidth,
@@ -79,8 +76,6 @@ function bar(point, { index, scale }, style) {
     rx: style.cornerRadius,
     class: `bar cat-${categoryOf(point.us_aqi)?.key ?? "unknown"}`,
   });
-  if (style.staggerMs) rect.style.transitionDelay = `${index * style.staggerMs}ms`;
-  return rect;
 }
 
 /**

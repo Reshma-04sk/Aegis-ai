@@ -1,0 +1,134 @@
+/* Landing dashboard: the headline, city switcher and the bento grid of live tiles. */
+
+.dash {
+  max-width: var(--page);
+  margin: 0 auto;
+  padding: clamp(1.5rem, 4vw, 3rem) var(--gutter) clamp(2.5rem, 5vw, 4rem);
+}
+.dash-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  justify-content: space-between;
+  gap: 1.25rem 2rem;
+  margin-bottom: 1.5rem;
+}
+.dash h1 {
+  font-size: var(--step-4);
+  letter-spacing: -0.015em;
+  max-width: 20ch;
+  margin-bottom: 0.75rem;
+}
+.lede {
+  font-size: 1.15rem;
+  max-width: 38rem;
+  margin: 0;
+  color: var(--muted);
+}
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  padding: 0.3rem;
+  border-radius: var(--radius);
+  background: var(--card);
+  box-shadow: var(--shadow);
+}
+.chip {
+  min-height: 2.75rem;
+  padding: 0.3rem 0.85rem;
+  font-weight: 600;
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  transition:
+    background-color 0.2s,
+    color 0.2s;
+}
+.chip:hover {
+  background: var(--well);
+}
+.chip[aria-pressed="true"] {
+  background: var(--shield);
+  color: var(--accent-fg);
+}
+
+/* The bento: tiles placed by name, so the layout reads the same at every width. */
+.bento {
+  display: grid;
+  gap: 1rem;
+  grid-template-areas: "gauge" "hours" "verdict" "pm" "wind" "station" "cta";
+}
+@media (min-width: 40rem) {
+  .bento {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-areas: "gauge verdict" "hours hours" "pm wind" "station cta";
+  }
+}
+@media (min-width: 64rem) {
+  .bento {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-areas:
+      "gauge gauge hours hours"
+      "verdict verdict pm wind"
+      "verdict verdict station cta";
+  }
+}
+.tile {
+  background: var(--card);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem 1.35rem;
+  box-shadow: var(--shadow);
+  transition:
+    transform 0.25s,
+    box-shadow 0.25s;
+}
+.tile:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-lift);
+}
+.tile h2 {
+  font-family: var(--text);
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--muted);
+  margin-bottom: 0.75rem;
+}
+.tile-gauge {
+  grid-area: gauge;
+}
+.tile-hours {
+  grid-area: hours;
+}
+.tile-verdict {
+  grid-area: verdict;
+  border-top: 4px solid var(--shield);
+}
+.tile-pm {
+  grid-area: pm;
+}
+.tile-wind {
+  grid-area: wind;
+}
+.tile-station {
+  grid-area: station;
+}
+.tile-cta {
+  grid-area: cta;
+  background: var(--shield);
+  border-color: var(--shield);
+  color: var(--accent-fg);
+}
+.tile-cta h2,
+.tile-cta .meta {
+  color: var(--accent-fg);
+}
+.tile-cta .button {
+  background: var(--card);
+  border-color: var(--card);
+  color: var(--shield);
+}
+.tile-cta .button:hover {
+  background: var(--fog);
+}

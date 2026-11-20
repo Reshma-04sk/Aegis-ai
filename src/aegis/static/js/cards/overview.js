@@ -3,6 +3,8 @@ import { ageText, fmt, hourLabel } from "../format.js";
 import { card, categoryBadge, el, verdictBadge } from "../dom.js";
 import { CONFIG, STALE_TEXT, categoryOf } from "../config.js";
 import { present } from "./present.js";
+import { gauge } from "../gauge.js";
+import { countUp, sweep } from "../motion.js";
 
 /** @typedef {import("#api").PlanResponse} PlanResponse */
 
@@ -31,8 +33,14 @@ function weatherNote(w) {
 
 /** @param {PlanResponse} d */
 function headline(d) {
+  const dial = gauge(d.aqi);
   const num = el("p", undefined, `aqi-number cat-${categoryOf(d.aqi)?.key ?? "unknown"}`);
-  num.append(el("span", String(Math.round(d.aqi))), el("span", "US AQI", "unit"));
+  const value = el("span", "0");
+  num.append(value, el("span", "US AQI", "unit"));
+  countUp(value, Math.round(d.aqi));
+  sweep(dial.arc, dial.percent);
+  const dialBox = el("div", undefined, "overview-dial");
+  dialBox.append(dial.node, num);
   const side = el("div");
   side.append(
     categoryBadge(d.aqi),
@@ -40,7 +48,7 @@ function headline(d) {
     verdictBadge(d.household_verdict),
   );
   const top = el("div", undefined, "overview-top");
-  top.append(num, side);
+  top.append(dialBox, side);
   return top;
 }
 

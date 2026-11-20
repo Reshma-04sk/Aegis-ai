@@ -139,24 +139,26 @@ test.describe("landing", () => {
     });
     await page.goto("/");
     await expect(page.getByRole("heading", { level: 1 })).toHaveAccessibleName(
-      /Plan your family’s day around winter smog/,
+      /Today’s air, read for the people you live with/,
     );
     for (const name of [
-      "Today’s air, hour by hour",
-      "One plan for everyone at home",
-      "Why winter mornings are the worst",
-      "For the people you worry about",
-      "How it decides",
-      "Forecast and measurement, side by side",
-      "Questions people ask",
+      "Air quality now",
+      "The next 24 hours",
+      "Today’s call",
+      "One plan, four decisions",
+      "How Aegis decides",
+      "What the numbers are, and are not",
+      "Questions",
     ]) {
       await expect(page.getByRole("heading", { level: 2, name })).toBeAttached();
     }
-    await expect(page.getByText("Delhi, Test State")).toBeVisible();
-    await expect(page.locator(".live-aqi")).toContainText("170");
-    // The hero instrument brackets the cleanest two hours and says which they are.
-    await expect(page.locator(".live-chart .window")).toHaveCount(1);
-    await expect(page.locator(".live-chart figcaption")).toContainText("Cleanest two hours");
+    await expect(page.getByText("Delhi, Test State", { exact: true })).toBeVisible();
+    await expect(page.locator("#tile-gauge .figure")).toContainText("170");
+    await expect(page.locator("#tile-gauge")).toContainText("Unhealthy");
+    await expect(page.locator("#live-status")).toHaveText("Delhi, Test State: US AQI 170, Unhealthy.");
+    // The hours tile brackets the cleanest two hours and says which they are.
+    await expect(page.locator(".hours-chart .window")).toHaveCount(1);
+    await expect(page.locator(".hours-chart figcaption")).toContainText("Cleanest two hours");
     await expect(page.getByText(/Measured at Fixture Road \(CPCB\)/)).toBeVisible();
     await expect(page.getByRole("link", { name: "Plan a day in Delhi" })).toHaveAttribute(
       "href",
@@ -172,20 +174,23 @@ test.describe("landing", () => {
 
   test("city chips switch the live forecast and announce the pressed city", async ({ page }) => {
     await page.goto("/");
-    await expect(page.getByText("Delhi, Test State")).toBeVisible();
+    await expect(page.getByText("Delhi, Test State", { exact: true })).toBeVisible();
     await page.getByRole("button", { name: "Mumbai" }).click();
     await expect(page.getByRole("button", { name: "Mumbai" })).toHaveAttribute("aria-pressed", "true");
     await expect(page.getByRole("button", { name: "Delhi" })).toHaveAttribute("aria-pressed", "false");
-    await expect(page.getByText("Mumbai, Test State")).toBeVisible();
+    await expect(page.getByText("Mumbai, Test State", { exact: true })).toBeVisible();
   });
 
-  test("calls to action open the planner and explain the method", async ({ page }) => {
+  test("calls to action open the method and the planner", async ({ page, isMobile }) => {
     await page.goto("/");
-    await page.getByRole("link", { name: "How it decides" }).last().click();
-    await expect(page).toHaveURL(/#how$/);
-    await page.getByRole("link", { name: "Plan my family’s day" }).first().click();
-    await expect(page).toHaveURL(/\/plan$/);
-    await expect(page.getByRole("heading", { level: 1, name: "Plan your family’s day" })).toBeVisible();
+    if (!isMobile) {
+      // Phones keep only the plan button in the top bar.
+      await page.getByRole("link", { name: "How it decides" }).click();
+      await expect(page).toHaveURL(/#method$/);
+    }
+    await page.getByRole("link", { name: "Plan a day in Delhi" }).click();
+    await expect(page).toHaveURL(/\/plan\?city=Delhi$/);
+    await expect(page.getByRole("heading", { level: 1, name: "Build your family’s plan" })).toBeVisible();
   });
 
   test("FAQ answers open from the keyboard", async ({ page }) => {
@@ -196,14 +201,12 @@ test.describe("landing", () => {
     await expect(page.getByText("turns public air-quality data and published guidance")).toBeVisible();
   });
 
-  test("reduced motion: the hour bars are drawn at full height at once", async ({ page }) => {
+  test("reduced motion: tiles, dial and bars appear in their final state with no animation", async ({
+    page,
+  }) => {
     await page.emulateMedia({ reducedMotion: "reduce" });
     await page.goto("/");
-    await expect(page.locator(".live-chart .bar").first()).toBeVisible();
-    const transform = await page
-      .locator(".live-chart .bar")
-      .first()
-      .evaluate((e) => getComputedStyle(e).transform);
-    expect(transform).toBe("none");
+    await expect(page.locator("#tile-gauge .figure-value")).toHaveText("170");
+    expect(await page.evaluate(() => document.getAnimations().length)).toBe(0);
   });
 });

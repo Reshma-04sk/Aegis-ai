@@ -20,6 +20,6 @@ AI-written briefings) and from users (names, notes). Any of these could contain 
   self only).
 
 ## Consequences
-- Libraries that animate by writing style attributes cannot be used; the one animation is a
-  CSS transition.
+- Markup `style` attributes are blocked, so all styling lives in stylesheets. Motion uses the Web
+  Animations API, which the policy allows.
 - `test_api.py::test_security_headers_and_request_id` asserts the policy on every route type.

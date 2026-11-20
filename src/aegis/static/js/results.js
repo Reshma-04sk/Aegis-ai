@@ -2,6 +2,7 @@
 import { postBriefing } from "./api.js";
 import { byId, el, pick } from "./dom.js";
 import { SOURCE_TEXT } from "./cards/briefing.js";
+import { rise } from "./motion.js";
 import { renderPlan } from "./render.js";
 
 const results = byId("results");
@@ -39,6 +40,7 @@ async function upgradeBriefing(id) {
  */
 export function showPlan(d) {
   results.replaceChildren(...renderPlan(d));
+  rise(results.children);
   results.focus({ preventScroll: true });
   // Smooth by default; the reduced-motion rule in foundation.css makes this an instant jump.
   results.scrollIntoView({ block: "start" });

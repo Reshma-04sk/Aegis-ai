@@ -1,4 +1,4 @@
-# Stage 1: third-party front-end assets (GSAP, Lenis, fonts) come from npm at build time,
+# Stage 1: the two web fonts come from npm at build time,
 # pinned by package-lock.json, instead of being committed to the repository.
 FROM node:26.13.1-slim AS assets
 WORKDIR /build

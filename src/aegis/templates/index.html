@@ -1,18 +1,17 @@
 {% extends "base.html" %}
-{% set title = "AEGIS: plan your family's day around the smog" %}
-{% set description = "AEGIS plans your family’s day around winter smog: who should go out and when, "
-  ~ "how to keep indoor air clean, and what a greener commute changes, from the CAMS forecast "
-  ~ "and the nearest official monitor." %}
+{% set title = "Aegis: today's air, read for your family" %}
+{% set description = "Aegis turns the live smog forecast and the nearest official monitor into one "
+  ~ "call for your household: who goes out, when, and what to change at home and on the road." %}
 {% set nav = [
-  {"href": "#how", "text": "How it decides"},
+  {"href": "#method", "text": "How it decides"},
   {"href": "#faq", "text": "Questions"},
   {"href": "/plan", "text": "Plan my day", "cta": true},
 ] %}
 {% block content %}
-  {% for section in ("hero", "features", "winter", "people", "how", "data", "faq", "closing") %}
+  {% for section in ("dashboard", "covers", "method", "trust", "faq") %}
   {% include "partials/landing/" ~ section ~ ".html" %}
   {% endfor %}
 {% endblock %}
 {% block scripts %}
-<script type="module" src="/static/js/live.js"></script>
+<script type="module" src="/static/js/dashboard.js"></script>
 {% endblock %}

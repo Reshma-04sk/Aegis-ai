@@ -1,0 +1,133 @@
+/* Inside the tiles: the gauge, big figures, the hours chart and the loading shimmer. */
+
+.tile-body {
+  display: grid;
+  gap: 0.6rem;
+  align-content: start;
+}
+.tile-body > * {
+  margin: 0;
+}
+.tile-body > .badge,
+.tile-body > .button {
+  justify-self: start;
+}
+/* Each tile reserves its loaded height, so live data never moves the page. */
+#tile-gauge {
+  min-height: 19rem;
+}
+#tile-hours {
+  min-height: 15.5rem;
+}
+#tile-verdict {
+  min-height: 15rem;
+}
+#tile-pm,
+#tile-wind,
+#tile-station,
+#tile-cta {
+  min-height: 8.5rem;
+}
+.is-loading {
+  border-radius: var(--radius);
+  background: linear-gradient(100deg, var(--well) 40%, #ffffff 50%, var(--well) 60%) 0 0 / 200% 100%;
+  animation: shimmer 1.4s linear infinite;
+}
+.tile-cta .is-loading {
+  opacity: 0.25;
+}
+@keyframes shimmer {
+  to {
+    background-position: -200% 0;
+  }
+}
+
+.place {
+  font-weight: 700;
+}
+.meta {
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+.figure {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: var(--step-3);
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+.figure-unit {
+  font-family: var(--text);
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--muted);
+}
+.tile-gauge .figure {
+  font-size: 3.5rem;
+  justify-content: center;
+  margin-top: -3.25rem;
+}
+.tile-gauge .badge {
+  justify-self: center;
+}
+
+.gauge {
+  width: 100%;
+  max-width: 20rem;
+  justify-self: center;
+}
+.gauge path {
+  fill: none;
+  stroke-width: 16;
+}
+.gauge .band {
+  opacity: 0.22;
+}
+.gauge .cat-good {
+  stroke: var(--bar-good);
+}
+.gauge .cat-moderate {
+  stroke: var(--bar-moderate);
+}
+.gauge .cat-usg {
+  stroke: var(--bar-usg);
+}
+.gauge .cat-unhealthy {
+  stroke: var(--bar-unhealthy);
+}
+.gauge .cat-very-unhealthy {
+  stroke: var(--bar-very-unhealthy);
+}
+.gauge .cat-hazardous {
+  stroke: var(--bar-hazardous);
+}
+
+.hours-chart {
+  margin: 0;
+}
+.hours-chart svg {
+  width: 100%;
+  height: auto;
+}
+.hours-chart text {
+  font-size: 9px;
+  fill: var(--muted);
+}
+.hours-chart figcaption {
+  margin-top: 0.6rem;
+  padding-left: 0.75rem;
+  border-left: 4px solid var(--dawn);
+  font-weight: 600;
+}
+/* Bars grow from their own baseline (motion.grow); a thin ink edge keeps pale bands visible. */
+.bar {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  stroke: var(--ink);
+  stroke-opacity: 0.35;
+  stroke-width: 0.6;
+}

@@ -18,7 +18,8 @@ Browser (no build step, ES modules)            FastAPI (src/aegis)
   storage.js    this-device persistence         airdata/      Open-Meteo adapter, parser, provider port
   dom.js        the only DOM builder            stations/     OpenAQ adapter, pure helpers, provider port
   format.js     pure helpers (unit-tested)      advisor/      Gemini adapter, rules briefing, facts, port
-  live.js       landing instrument (hour strip) models/       Pydantic v2 contract, split by domain
+  dashboard.js  landing tiles (tiles/, gauge.js) models/       Pydantic v2 contract, split by domain
+  motion.js     Web Animations, reduced-motion aware
   types/api.d.ts  the API contract for tsc      fetch.py, cache.py, errors.py, freshness.py   shared infrastructure
 ```
 
@@ -76,7 +77,7 @@ That includes Bandit security rules (`S`) and a ban on boolean positional flags 
 ## Measured
 - **Python:** 58 modules, 371 tests (unit, Hypothesis property, Schemathesis fuzz,
   conventions), 100% line coverage. ruff and `mypy --strict` are clean.
-- **Front end:** 21 ES modules and no third-party scripts. ESLint, `tsc` and Prettier are clean. 6 `node:test` unit tests.
+- **Front end:** 25 ES modules and no third-party scripts. ESLint, `tsc` and Prettier are clean. 6 `node:test` unit tests.
 - **End to end:** 28 Playwright tests at 1440 px and 375 px, including axe WCAG 2.1 AA.
 
 ## Reproduce

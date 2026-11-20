@@ -88,31 +88,38 @@ Browser ──▶ POST /api/plan ──▶ Open-Meteo geocoding + CAMS air quali
 - The container runs as a non-root user; CI has read-only permissions.
 
 ## Design
-Two pages: a landing page at `/` and the planner at `/plan` (`/plan?city=Delhi` prefills the city).
+Two pages: a live dashboard at `/` and the planner at `/plan` (`/plan?city=Delhi` prefills the city).
 
-AEGIS reads like an instrument in daylight. The landing opens with the promise on the left and,
-on the right, **today's air for a real city, hour by hour**: the live CAMS forecast as 24 bars in
-their EPA category colours, the cleanest two hours bracketed and named, the nearest official
-monitor's measured PM2.5 beside it, and a link to plan a day in that city. That strip is the one
-bold element, because when to go out is the decision the product exists for. Below it, plain
-sections: what the plan covers, why winter mornings are the worst (a static inversion diagram
-beside the three phases of the day), the people it is built for, how it decides, where the
-numbers come from, and questions.
+**The dashboard** shows one city's air as a bento grid of tiles, switched with a city selector:
+- an AQI dial on the EPA 0-500 scale, every category band in its own colour, the value arc sweeping
+  to today's number while the number counts up;
+- the next 24 hours as bars that grow in, with the cleanest two hours bracketed and named;
+- today's call for a healthy adult, its first action and the reasons behind it;
+- modelled PM2.5 and the pollutant driving the AQI;
+- the hour the air layer mixes deepest, when smog spreads out most;
+- the nearest official monitor's measured PM2.5, with its distance and age;
+- a link to plan a day for your own household in that city.
 
-The planner puts the form beside the plan on wide screens (the form stays in view while you read
-the results) and stacks them on phones. Before the first plan, the results column says what to
-do.
+Every tile reserves its loaded height, so live data never moves the page, and a shimmer shows
+while a city loads. Below the grid: what a plan covers, how Aegis decides (sense, decide,
+explain), what the numbers are and are not, and questions.
 
-Motion is a single moment: when a city's data arrives, its hour bars grow from the baseline. With
-`prefers-reduced-motion` they are drawn at full height at once and scrolling is instant.
+**The planner** puts the form beside the plan on wide screens (the form stays in view while you
+read) and stacks them on phones. The overview card carries the same dial; result cards rise in
+turn.
 
-The palette is cool mineral paper (`#e6edef`), slate ink (`#1b2b3a`), one shield green for actions
-(`#0e6b5c`) and an amber rule for the cleanest window (`#c98a1b`). Colour is otherwise reserved for
-the air itself, using the EPA category colours, darkened for text so every label passes AA. Type is
-Fraunces, a variable serif, for display and Atkinson Hyperlegible Next, a face designed for
-low-vision readers, for reading. There are no third-party scripts at all. The two fonts are not
-committed: `npm run vendor` (and the Docker build) copies them from npm, at the exact versions in
-`package-lock.json`, into `src/aegis/static/vendor`, so they are served from our own origin.
+**Motion** uses the browser's Web Animations API, with no library: the dial sweep, count-ups,
+tiles rising in turn and bars growing, each once per data load. With `prefers-reduced-motion`
+everything appears in its final state and no animation is created.
+
+The palette is white tiles on cool mineral (`#e6edef`), slate ink (`#1b2b3a`), one shield green
+for actions (`#0e6b5c`) and an amber rule for the cleanest window (`#c98a1b`). Colour is otherwise
+reserved for the air itself, using the EPA category colours, darkened for text so every label
+passes AA. Type is Fraunces, a variable serif, for headings and figures, and Atkinson Hyperlegible
+Next, a face designed for low-vision readers, for reading. There are no third-party scripts. The
+two fonts are not committed: `npm run vendor` (and the Docker build) copies them from npm, at the
+exact versions in `package-lock.json`, into `src/aegis/static/vendor`, so they are served from our
+own origin.
 
 | Asset | Package | License |
 |---|---|---|
@@ -138,7 +145,7 @@ that receives focus; the forecast is also available as a data table; visible foc
 | `static/js/dom.js` | Safe DOM builders (`textContent` only) shared by both pages |
 | `static/js/app.js`, `api.js`, `results.js`, `cards/` | Planner wiring, network calls, results region, one module per card |
 | `static/js/household.js`, `rows.js`, `storage.js`, `location.js` | Form rows, device storage, place or coordinates |
-| `static/js/live.js` | The landing instrument: one city's next 24 hours, fetched when shown |
+| `static/js/dashboard.js`, `tiles/`, `gauge.js`, `motion.js` | Landing dashboard, its tiles, the AQI dial and native animation helpers |
 
 ## Checks
 ```bash

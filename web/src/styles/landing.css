@@ -156,9 +156,13 @@
   color: var(--muted);
 }
 .place {
+  /* Two lines reserved: geocoded names ("Delhi, National Capital Territory of Delhi, India")
+     replace the bare city name when data arrives, and must not push the dial down. */
+  min-height: 3.2em;
   margin: 0.35rem 0 0.5rem;
   font-weight: 700;
   font-size: 1.05rem;
+  line-height: 1.6;
 }
 .instrument .error {
   margin-top: 1rem;

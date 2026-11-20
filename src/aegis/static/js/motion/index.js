@@ -1,8 +1,7 @@
 // Motion for both pages. One idea carries it: the air over the city. With prefers-reduced-motion
-// nothing here animates: the sky is still, scrolling is native and the cursor is the system one.
+// nothing here animates: the sky is still and scrolling is native.
 // No ScrollTrigger pinning: it writes style attributes, which the CSP blocks.
-import { startCursor } from "./cursor.js";
-import { air, finePointer, motionKit, reducedMotion } from "./env.js";
+import { air, motionKit, reducedMotion } from "./env.js";
 import { revealHeadlines } from "./headline.js";
 import { startLanding } from "./landing.js";
 import { startParticles } from "./particles.js";
@@ -41,7 +40,6 @@ function start() {
   }
   /** @type {Array<() => void>} */
   const stoppers = [];
-  if (finePointer.matches) stoppers.push(startCursor());
   startSmoothScroll(kit);
   revealHeadlines(kit);
   const canvas = /** @type {HTMLCanvasElement | null} */ (document.querySelector(".particles"));

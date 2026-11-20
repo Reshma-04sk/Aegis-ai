@@ -10,13 +10,11 @@
 }
 .band h2 {
   font-size: clamp(1.9rem, 4vw, 3rem);
-  font-stretch: 82%;
   margin-bottom: 1.75rem;
   text-wrap: balance;
 }
 .band h3 {
   font-size: 1.3rem;
-  font-stretch: 90%;
   margin-bottom: 0.4rem;
 }
 
@@ -33,7 +31,6 @@
   font-family: var(--display);
   font-weight: 700;
   font-size: 1.3rem;
-  font-stretch: 90%;
   margin-bottom: 0.35rem;
 }
 .legend dd {

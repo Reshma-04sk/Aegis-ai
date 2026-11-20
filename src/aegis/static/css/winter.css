@@ -21,7 +21,6 @@
 }
 .winter h2 {
   font-size: clamp(1.9rem, 4vw, 3rem);
-  font-stretch: 82%;
   margin-bottom: 1.25rem;
   text-wrap: balance;
 }

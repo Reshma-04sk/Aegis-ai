@@ -18,8 +18,8 @@ Lighthouse's Agentic Browsing category also scores 100 on all four runs.
 - **Layout shift went from 0.347 to 0.** The first live audit found CLS 0.347 (planner, mobile)
   and 0.159 (landing, desktop). Fixes:
   - Metric-matched fallback fonts. Atkinson averages 0.441 em per character, the same as Arial.
-    Condensed Bricolage at weight 800 is 81% of Arial Bold. Measured from the font files with
-    fontTools.
+    Fraunces at weight 700 averages 115.7% of Liberation Serif Bold (metric-compatible with
+    Times New Roman Bold). Measured from the font files with fontTools.
   - The display font is preloaded and set to `font-display: optional`, so a late arrival never
     re-wraps a headline.
   - The planner module runs with `blocking="render"` and `modulepreload`, so saved form rows
@@ -62,8 +62,9 @@ OpenAQ station lookup). A hit is network round trip only, about **95% faster**.
 ## Front-end runtime
 - **Lazy data.** The landing page fetches live city data only when that section nears the
   viewport (`IntersectionObserver`), so a quick visit costs no API call.
-- **Idle canvas costs nothing.** On a clear sky the particle canvas stops redrawing, so the
-  blurred glass above it is not re-composited every frame.
+- **Idle canvas costs nothing.** On a clear sky the particle canvas stops redrawing.
+- **No backdrop blur.** Panels are solid, so the moving sky behind them never forces a
+  per-frame blur of every panel above it.
 - **Compositor-only animation.** Motion uses transforms and opacity. The pointer glow is one
   fixed-size layer moved by `transform`, so it never repaints the panel.
 - **Reduced motion** turns off all of it: no animation loop, no smooth scrolling.

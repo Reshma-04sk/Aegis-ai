@@ -1,12 +1,11 @@
 /* Fonts, metric-matched fallbacks, design tokens, base typography and utilities. */
 
-/* AEGIS — a dusk city under winter smog; content sits on frosted glass over the sky. */
+/* AEGIS: a pine-dark city under winter smog; content sits on solid, square-edged panels. */
 
 @font-face {
-  font-family: "Bricolage Grotesque";
-  src: url("/static/vendor/fonts/bricolage-grotesque.woff2") format("woff2-variations");
-  font-weight: 200 800;
-  font-stretch: 75% 100%;
+  font-family: "Fraunces";
+  src: url("/static/vendor/fonts/fraunces.woff2") format("woff2-variations");
+  font-weight: 100 900;
   /* Preloaded in <head>; "optional" means a late arrival never swaps in (so never shifts the
      large headlines) and is used from cache on the next view. */
   font-display: optional;
@@ -20,8 +19,8 @@
 /* Metric-matched fallbacks: until the web fonts arrive, text is set in local Arial (or a
    metric-compatible equivalent) scaled to the same advance widths and vertical metrics, so the
    swap does not reflow lines or shift layout (CLS). Values measured from the font files:
-   Atkinson averages 0.441 em per character, the same as Arial; Bricolage at weight 800 and
-   80% width averages 0.386 em, 81% of Arial Bold. */
+   Atkinson averages 0.441 em per character, the same as Arial; Fraunces at weight 700
+   averages 0.509 em, 115.7% of Liberation Serif Bold (metric-compatible with Times New Roman). */
 @font-face {
   font-family: "Atkinson Fallback";
   src: local("Arial"), local("ArialMT"), local("Liberation Sans"), local("Helvetica"), local("Arimo");
@@ -31,13 +30,13 @@
   line-gap-override: 0%;
 }
 @font-face {
-  font-family: "Bricolage Fallback";
+  font-family: "Fraunces Fallback";
   src:
-    local("Arial Bold"), local("Arial-BoldMT"), local("Liberation Sans Bold"), local("Helvetica Bold"),
-    local("Arimo Bold");
-  size-adjust: 81%;
-  ascent-override: 114.8%;
-  descent-override: 33.3%;
+    local("Times New Roman Bold"), local("TimesNewRomanPS-BoldMT"), local("Liberation Serif Bold"),
+    local("Tinos Bold");
+  size-adjust: 115.7%;
+  ascent-override: 84.5%;
+  descent-override: 22%;
   line-gap-override: 0%;
 }
 
@@ -59,7 +58,7 @@
   --accent: #8fe3c8;
   --accent-fg: #0a231c;
   --focus: #ffc76b;
-  --glass: rgba(13, 36, 31, 0.74);
+  --glass: rgba(11, 31, 27, 0.94);
   --glass-edge: rgba(238, 246, 242, 0.18);
   --go: #8fe3b0;
   --caution: #ffd36e;
@@ -77,12 +76,12 @@
   --bar-unhealthy: #e03131;
   --bar-very-unhealthy: #8f45c9;
   --bar-hazardous: #b42525;
-  /* Type: Bricolage for display, Atkinson Hyperlegible Next for reading */
-  --display: "Bricolage Grotesque", "Bricolage Fallback", sans-serif;
+  /* Type: Fraunces (serif) for display, Atkinson Hyperlegible Next for reading */
+  --display: "Fraunces", "Fraunces Fallback", serif;
   --text: "Atkinson Hyperlegible Next", "Atkinson Fallback", sans-serif;
-  --radius-lg: 1.5rem;
-  --radius: 0.9rem;
-  --radius-sm: 0.6rem;
+  --radius-lg: 0.5rem;
+  --radius: 0.4rem;
+  --radius-sm: 0.3rem;
   --measure: 40rem;
   --accent-hover: #c6f2e3;
   --placeholder: #a7c3ba;

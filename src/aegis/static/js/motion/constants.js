@@ -102,6 +102,3 @@ export const RESULTS = {
   barStagger: 0.015,
   barsAt: 0.5,
 };
-
-/** Custom cursor: how quickly the ring catches up with the pointer (0..1 per frame). */
-export const CURSOR = { follow: 0.2, settled: 0.1, offscreen: -100 };

@@ -36,7 +36,6 @@
 .faq summary {
   font-family: var(--display);
   font-size: 1.2rem;
-  font-stretch: 92%;
   justify-content: space-between;
   gap: 1rem;
   list-style: none;
@@ -61,7 +60,6 @@
 }
 .closing-panel h2 {
   font-size: clamp(2.2rem, 5.5vw, 4.25rem);
-  font-stretch: 78%;
   font-weight: 800;
   margin-bottom: 0.75rem;
 }
@@ -106,7 +104,6 @@
 }
 .planner h1 {
   font-size: clamp(2.2rem, 5vw, 3.6rem);
-  font-stretch: 80%;
   font-weight: 800;
   margin-bottom: 1rem;
 }

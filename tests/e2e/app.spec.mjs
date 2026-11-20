@@ -229,32 +229,12 @@ test.describe("landing", () => {
     await expect(page.getByText("turns public air-quality data and published guidance")).toBeVisible();
   });
 
-  test("custom cursor follows a mouse, grows over links, and never appears on touch", async ({
-    page,
-    isMobile,
-  }) => {
-    await page.goto("/");
-    const html = page.locator("html");
-    if (isMobile) {
-      await expect(html).not.toHaveClass(/has-cursor/);
-      await expect(page.locator(".cursor-dot")).toHaveCount(0);
-      return;
-    }
-    await expect(html).toHaveClass(/has-cursor/);
-    await page.mouse.move(300, 300);
-    await expect(html).toHaveClass(/cursor-visible/);
-    await page.getByRole("link", { name: "Plan my day" }).hover();
-    await expect(html).toHaveClass(/cursor-hover/);
-    await expect(page.locator(".cursor-dot")).toHaveAttribute("aria-hidden", "true");
-  });
-
-  test("reduced motion: clear sky, native scrolling, no custom cursor", async ({ page }) => {
+  test("reduced motion: clear sky and native scrolling", async ({ page }) => {
     await page.emulateMedia({ reducedMotion: "reduce" });
     await page.goto("/");
     const html = page.locator("html");
     await expect(html).toHaveClass(/sky-is-clear/);
     await expect(html).not.toHaveClass(/lenis/);
-    await expect(html).not.toHaveClass(/has-cursor/);
     await expect(page.locator(".scroll-cue")).toBeHidden();
     await page.getByRole("link", { name: "See the air right now" }).click();
     await expect(page.locator("#now")).toBeFocused();

@@ -13,7 +13,7 @@ data (`tests/e2e/fixture_app.py`).
 | API fuzzing | Schemathesis, from the OpenAPI schema | 3 endpoints × 150 generated requests | no 5xx, no undocumented status, no schema drift, invalid input always rejected (included in the 371) |
 | Dynamic security scan | OWASP ZAP baseline against the running app | 70 passive rules | 0 failures, 66 passes; 4 reviewed warnings recorded with reasons in `.zap/rules.tsv`; its COEP finding was fixed |
 | Front-end helpers | `node:test` | **6** | all pass |
-| End-to-end in a real browser | Playwright (Chromium) + axe-core | **34** (17 scenarios × desktop 1440 px and mobile 375 px) | all pass, zero WCAG 2.1 AA violations |
+| End-to-end in a real browser | Playwright (Chromium) + axe-core | **32** (16 scenarios × desktop 1440 px and mobile 375 px) | all pass, zero WCAG 2.1 AA violations |
 | Static checks | ruff, mypy `--strict`, ESLint 10, tsc `--checkJs` strict, Prettier | n/a | zero findings |
 | Security scanning | CodeQL (Python and JavaScript), pip-audit, npm audit | n/a | in CI |
 
@@ -66,8 +66,7 @@ data (`tests/e2e/fixture_app.py`).
 - City chips switch the live forecast and announce which city is pressed.
 - Calls to action open the planner, and in-page links move focus.
 - FAQ answers open from the keyboard.
-- The custom cursor follows a mouse and grows over links, but never appears on touch.
-- Reduced motion gives a clear sky, native scrolling and no custom cursor.
+- Reduced motion gives a clear sky and native scrolling.
 
 ## How the tests are designed
 - **Edge cases first.** Boundary AQI values, empty or missing hours, midnight wrap-around,
@@ -85,6 +84,6 @@ data (`tests/e2e/fixture_app.py`).
 uv sync && npm ci && npx playwright install chromium
 uv run pytest                 # 371 tests (incl. property, fuzz and convention tests) + coverage report
 node --test tests/js/         # 6 helper tests
-npx playwright test           # 34 browser tests (starts the fixture server itself)
+npx playwright test           # 32 browser tests (starts the fixture server itself)
 uv run ruff check . && uv run mypy && npm run lint && npm run typecheck && npm run format:check
 ```

@@ -19,7 +19,7 @@
 | Code quality | [CODE_QUALITY.md](CODE_QUALITY.md) | Typed on both sides (mypy strict, tsc strict `--checkJs`), complexity ≤ 10, docstrings enforced |
 | Security | [SECURITY.md](SECURITY.md) | Strict CSP with Trusted Types, prompt-injection-proof decisions, CodeQL |
 | Efficiency | [EFFICIENCY.md](EFFICIENCY.md) | Lighthouse **100** for performance, accessibility, best practices and SEO on both pages, mobile and desktop; CLS 0 |
-| Testing | [TESTING.md](TESTING.md) | 371 backend tests at **100% coverage** (incl. property-based, API fuzzing and code-convention checks), 34 browser tests, OWASP ZAP scan |
+| Testing | [TESTING.md](TESTING.md) | 371 backend tests at **100% coverage** (incl. property-based, API fuzzing and code-convention checks), 32 browser tests, OWASP ZAP scan |
 | Accessibility | [ACCESSIBILITY.md](ACCESSIBILITY.md) | WCAG 2.1 AA: zero axe violations at 1440 px and 375 px |
 
 Design decisions: [docs/adr](docs/adr) (rules decide and AI explains; forecast and measurement
@@ -104,10 +104,9 @@ open, the button shows progress, the page glides to the results, the cards rise 
 forecast bars grow. The sky then settles to match the plan's real AQI category: clear for Good,
 smog and drifting particles for Unhealthy and worse.
 
-A custom cursor (a precise dot and a trailing ring that grows over controls) appears only for
-mouse users; touch, pens, form fields and reduced motion keep the native cursor. Content sits on frosted-glass panels over
-the scene. The skyline is hand-built SVG, so there are no stock photos to license and the page
-stays light. Type is Bricolage Grotesque for display and Atkinson Hyperlegible Next, a face
+Content sits on solid, square-edged panels with a teal top rule, so nothing is re-blurred as the
+sky moves behind it, and the system cursor is never replaced. The skyline is hand-built SVG, so there are no stock photos to license and the page
+stays light. Type is Fraunces, a variable serif, for display and Atkinson Hyperlegible Next, a face
 designed for low-vision readers, for reading. Third-party scripts and fonts are not committed:
 `npm run vendor` (and the Docker build) copies them from npm, at the exact versions in
 `package-lock.json`, into `src/aegis/static/vendor`, so they are served from our own origin and
@@ -117,7 +116,7 @@ the strict CSP stays intact.
 |---|---|---|
 | `gsap.min.js`, `ScrollTrigger.min.js` | gsap 3.15.1 | GSAP Standard "no charge" license |
 | `lenis.min.js` | lenis 1.3.27 | MIT |
-| Bricolage Grotesque, Atkinson Hyperlegible Next (latin, variable) | @fontsource-variable 5.3.0 | SIL Open Font License 1.1 |
+| Fraunces, Atkinson Hyperlegible Next (latin, variable) | @fontsource-variable 5.3.0 | SIL Open Font License 1.1 |
 With `prefers-reduced-motion`, the sky starts clear, nothing animates and scrolling is native.
 
 ## Accessibility
@@ -151,7 +150,7 @@ uv run pytest          # 371 tests incl. property, fuzz and convention tests, 10
 node --test tests/js/  # front-end helpers
 npm ci && npm run vendor && npm run lint && npm run typecheck && npm run format:check
 npx playwright install chromium
-npx playwright test    # 34 browser tests at 1440px and 375px, incl. axe WCAG 2.1 AA scans
+npx playwright test    # 32 browser tests at 1440px and 375px, incl. axe WCAG 2.1 AA scans
 ```
 The browser tests run the real front end and API against fixed air data
 (`tests/e2e/fixture_app.py`), so they need no network or API key. They check the landing page (focus moves with in-page links, reduced motion), the whole flow,

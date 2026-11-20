@@ -1,22 +1,25 @@
-"""HTML routes: the landing page and the planner, rendered from Jinja templates."""
+"""HTML routes: the two pages the front-end build writes (prerendered HTML, hydrated by React)."""
 
 from __future__ import annotations
 
-from fastapi import APIRouter, Request
-from fastapi.responses import HTMLResponse
+from pathlib import Path
 
-from ..templating import TEMPLATES, page_context
+from fastapi import APIRouter
+from fastapi.responses import FileResponse
+
+# `npm run build` writes the pages and their hashed assets here (see vite.config.ts).
+STATIC_DIR = Path(__file__).parent.parent / "static"
 
 router = APIRouter(include_in_schema=False)
 
 
 @router.get("/")
-async def index(request: Request) -> HTMLResponse:
+async def index() -> FileResponse:
     """Landing page."""
-    return TEMPLATES.TemplateResponse(request, "index.html", page_context())
+    return FileResponse(STATIC_DIR / "index.html")
 
 
 @router.get("/plan")
-async def planner(request: Request) -> HTMLResponse:
+async def planner() -> FileResponse:
     """Planner page."""
-    return TEMPLATES.TemplateResponse(request, "plan.html", page_context())
+    return FileResponse(STATIC_DIR / "plan.html")

@@ -16,6 +16,7 @@ if TYPE_CHECKING:
 
     from fastapi import Request, Response
 
+IMMUTABLE_PREFIX = "/static/assets/"
 _REQUEST_ID = re.compile(r"^[A-Za-z0-9-]{8,64}$")
 log = logging.getLogger("aegis")
 
@@ -40,8 +41,13 @@ async def observe(
     response = await call_next(request)
     response.headers.update(SECURITY_HEADERS)
     response.headers["X-Request-ID"] = request_id
-    if not request.url.path.startswith("/api/"):
-        # Revalidate the page and assets (cheap via ETag) so a deploy is never served stale.
+    path = request.url.path
+    if path.startswith(IMMUTABLE_PREFIX):
+        # Built assets carry a content hash in their name, so a new deploy gets new URLs.
+        response.headers["Cache-Control"] = "public, max-age=31536000, immutable"
+        return response
+    if not path.startswith("/api/"):
+        # Revalidate the pages (cheap via ETag) so a deploy is never served stale.
         response.headers["Cache-Control"] = "no-cache"
         return response
     response.headers["Cache-Control"] = "no-store"

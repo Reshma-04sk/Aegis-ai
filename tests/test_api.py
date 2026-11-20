@@ -48,18 +48,15 @@ FULL = {
 }
 
 
-def test_health_index_and_static_modules():
+def test_health():
     with client_for() as client:
         assert client.get("/api/health").json() == {"status": "ok"}
-        page = client.get("/")
-        assert page.status_code == 200 and 'lang="en"' in page.text and 'type="module"' in page.text
-        assert client.get("/static/js/app.js").status_code == 200
-        assert client.get("/static/js/format.js").status_code == 200
 
 
 def test_security_headers_and_request_id():
     with client_for() as client:
-        for path in ("/", "/plan", "/api/health"):
+        # Headers are added to every response, including a 404 for a missing asset.
+        for path in ("/api/health", "/static/assets/missing.js", "/static/img/missing.svg"):
             headers = client.get(path).headers
             csp = headers["content-security-policy"]
             assert "script-src 'self'" in csp
@@ -69,10 +66,6 @@ def test_security_headers_and_request_id():
             assert headers["cross-origin-resource-policy"] == "same-origin"
             assert headers["cross-origin-embedder-policy"] == "require-corp"
             assert len(headers["x-request-id"]) == 32
-        assert client.get("/api/health").headers["cache-control"] == "no-store"
-        asset = client.get("/static/js/app.js", headers={"Accept-Encoding": "gzip"})
-        assert asset.headers["cache-control"] == "no-cache"
-        assert asset.headers["content-encoding"] == "gzip"
         echoed = client.get("/api/health", headers={"X-Request-ID": "abc-12345"}).headers[
             "x-request-id"
         ]
@@ -81,6 +74,17 @@ def test_security_headers_and_request_id():
             "x-request-id"
         ]
         assert rejected != "<script>"
+
+
+def test_cache_policy_and_compression():
+    with client_for() as client:
+        assert client.get("/api/health").headers["cache-control"] == "no-store"
+        # Hashed build assets never change under the same name; everything else revalidates.
+        hashed = client.get("/static/assets/landing-abc123.js").headers["cache-control"]
+        assert hashed == "public, max-age=31536000, immutable"
+        assert client.get("/static/img/icon.svg").headers["cache-control"] == "no-cache"
+        plan = client.post("/api/plan", json=FULL, headers={"Accept-Encoding": "gzip"})
+        assert plan.headers["content-encoding"] == "gzip"
 
 
 def test_full_plan(caplog):

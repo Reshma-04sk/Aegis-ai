@@ -1,0 +1,147 @@
+{
+  "categories": [
+    {
+      "name": "Good",
+      "max": 50,
+      "key": "good",
+      "icon": "●"
+    },
+    {
+      "name": "Moderate",
+      "max": 100,
+      "key": "moderate",
+      "icon": "◆"
+    },
+    {
+      "name": "Unhealthy for Sensitive Groups",
+      "max": 150,
+      "key": "usg",
+      "icon": "▲"
+    },
+    {
+      "name": "Unhealthy",
+      "max": 200,
+      "key": "unhealthy",
+      "icon": "■"
+    },
+    {
+      "name": "Very Unhealthy",
+      "max": 300,
+      "key": "very-unhealthy",
+      "icon": "✖"
+    },
+    {
+      "name": "Hazardous",
+      "max": null,
+      "key": "hazardous",
+      "icon": "☠"
+    }
+  ],
+  "pollutantLabels": {
+    "pm2_5": "PM2.5",
+    "pm10": "PM10",
+    "nitrogen_dioxide": "NO₂",
+    "ozone": "O₃",
+    "sulphur_dioxide": "SO₂",
+    "carbon_monoxide": "CO"
+  },
+  "staleAfterHours": 3,
+  "stationRadiusKm": 25,
+  "stationRecentHours": 24,
+  "groups": [
+    {
+      "value": "asthma",
+      "label": "Asthma / lung"
+    },
+    {
+      "value": "child",
+      "label": "Child"
+    },
+    {
+      "value": "elderly",
+      "label": "Older adult"
+    },
+    {
+      "value": "pregnant",
+      "label": "Pregnant"
+    },
+    {
+      "value": "heart_condition",
+      "label": "Heart condition"
+    }
+  ],
+  "activities": [
+    {
+      "value": "walk",
+      "label": "Walking"
+    },
+    {
+      "value": "run",
+      "label": "Running / sport"
+    },
+    {
+      "value": "cycle",
+      "label": "Cycling"
+    },
+    {
+      "value": "commute",
+      "label": "Commute"
+    },
+    {
+      "value": "rest",
+      "label": "Sitting outdoors"
+    }
+  ],
+  "durations": [
+    "0.5",
+    "1",
+    "2",
+    "3"
+  ],
+  "modes": [
+    {
+      "value": "car_petrol",
+      "label": "Petrol car"
+    },
+    {
+      "value": "car_diesel",
+      "label": "Diesel car"
+    },
+    {
+      "value": "car_hybrid",
+      "label": "Hybrid car"
+    },
+    {
+      "value": "car_ev",
+      "label": "Electric car"
+    },
+    {
+      "value": "motorbike",
+      "label": "Motorbike / scooter"
+    },
+    {
+      "value": "taxi",
+      "label": "Taxi"
+    },
+    {
+      "value": "bus",
+      "label": "Bus"
+    },
+    {
+      "value": "metro",
+      "label": "Metro / tram"
+    },
+    {
+      "value": "rail",
+      "label": "Suburban rail"
+    },
+    {
+      "value": "cycle",
+      "label": "Bicycle"
+    },
+    {
+      "value": "walk",
+      "label": "Walking"
+    }
+  ]
+}

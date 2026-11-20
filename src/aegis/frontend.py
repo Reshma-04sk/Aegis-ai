@@ -1,24 +1,21 @@
-"""HTML pages: Jinja2 templates fed from the same Python constants the API uses.
+"""Front-end constants: the AQI bands, labels, limits and form choices the UI is built from.
 
-Both pages share one layout (``templates/base.html``). Choices shown in the planner form and the
-numbers the front end needs (AQI categories, pollutant labels, staleness and station limits) come
-from here, so Python stays the single source of truth for both the API and the UI.
+The React front end imports them from ``web/src/generated/config.json``, which
+``uv run aegis-config`` writes from this module. ``tests/test_frontend.py`` fails when that file
+drifts, so Python stays the single source of truth for both the API and the UI.
 """
 
 from __future__ import annotations
 
-from pathlib import Path
+import json
+import sys
 from typing import Any
-
-from fastapi.templating import Jinja2Templates
 
 from .aqi import CATEGORIES, HAZARDOUS, POLLUTANT_LABELS
 from .commute import LABELS as MODE_LABELS
 from .freshness import STALE_AFTER_MINUTES
 from .models import Activity, Group
 from .stations import RECENT_MINUTES, SEARCH_RADIUS_M
-
-TEMPLATES = Jinja2Templates(directory=Path(__file__).parent / "templates")
 
 # Short labels for the planner form (the rules module words groups as full phrases).
 GROUP_CHOICES: dict[Group, str] = {
@@ -40,8 +37,13 @@ CATEGORY_KEYS = ("good", "moderate", "usg", "unhealthy", "very-unhealthy", "haza
 CATEGORY_ICONS = ("●", "◆", "▲", "■", "✖", "☠")
 
 
+def _choices(labels: dict[Any, str]) -> list[dict[str, str]]:
+    """Enum-keyed labels as an ordered list of {value, label} for a select or checkbox group."""
+    return [{"value": str(value), "label": label} for value, label in labels.items()]
+
+
 def front_end_config() -> dict[str, Any]:
-    """Constants the browser needs, rendered once into the page as JSON."""
+    """Everything the browser needs from Python, as one JSON-ready object."""
     bands = [*CATEGORIES, (HAZARDOUS, None)]
     return {
         "categories": [
@@ -52,15 +54,18 @@ def front_end_config() -> dict[str, Any]:
         "staleAfterHours": STALE_AFTER_MINUTES // 60,
         "stationRadiusKm": SEARCH_RADIUS_M // 1000,
         "stationRecentHours": RECENT_MINUTES // 60,
+        "groups": _choices(GROUP_CHOICES),
+        "activities": _choices(ACTIVITY_CHOICES),
+        "durations": list(DURATION_CHOICES),
+        "modes": _choices(MODE_LABELS),
     }
 
 
-def page_context() -> dict[str, Any]:
-    """Template variables shared by every page."""
-    return {
-        "config": front_end_config(),
-        "groups": GROUP_CHOICES,
-        "activities": ACTIVITY_CHOICES,
-        "durations": DURATION_CHOICES,
-        "modes": MODE_LABELS,
-    }
+def render_config() -> str:
+    """The config file's exact text: two-space indented JSON, UTF-8, trailing newline."""
+    return json.dumps(front_end_config(), indent=2, ensure_ascii=False) + "\n"
+
+
+def main() -> None:
+    """Console entry point (``aegis-config``): print the config for the front-end build."""
+    sys.stdout.write(render_config())
